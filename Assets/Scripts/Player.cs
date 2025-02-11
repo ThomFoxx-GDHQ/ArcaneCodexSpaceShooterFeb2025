@@ -1,9 +1,11 @@
+using System.Collections;
 using UnityEngine;
 using UnityEngine.VFX;
 
 public class Player : MonoBehaviour
 {
     [SerializeField] private float _speed = 5f;
+    private int _health = 3;
 
     float _horizontalInput;
     float _verticalInput;
@@ -15,11 +17,15 @@ public class Player : MonoBehaviour
 
     [SerializeField] Transform _laserContainer;
     [SerializeField] GameObject _laserPrefab;
+    [SerializeField] float _fireRate = 0.0f;
+    bool _isFiring = false;
+    Coroutine _fireCoroutine = null;
+    WaitForSeconds _fireTime;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        _fireTime = new WaitForSeconds(_fireRate);
     }
 
     // Update is called once per frame
@@ -29,12 +35,19 @@ public class Player : MonoBehaviour
         Bounds();
 
         //Spawn Laser when hit Space bar
-        if (Input.GetKeyDown(KeyCode.Space))
+        if (Input.GetKeyDown(KeyCode.Space) && !_isFiring)
         {
-            if (_laserPrefab != null)
-                Instantiate(_laserPrefab, transform.position, Quaternion.identity, _laserContainer);
+            _isFiring = true;
+            _fireCoroutine = StartCoroutine(FireSequence());
         }
-
+        if (Input.GetKeyUp(KeyCode.Space))
+        {
+            _isFiring = false;
+            if (_fireCoroutine != null)
+            {
+                StopCoroutine(_fireCoroutine);
+            }
+        }
 
     }
 
@@ -80,5 +93,33 @@ public class Player : MonoBehaviour
         //{
         //    position.x = 9.25f;
         //}
+    }
+
+    IEnumerator FireSequence()
+    {
+        while (_isFiring)
+        {
+            FireLaser();
+            yield return _fireTime;
+        }
+    }
+
+    private void FireLaser()
+    {
+        if (_laserPrefab != null)
+            Instantiate(_laserPrefab, transform.position, Quaternion.identity, _laserContainer);
+    }
+
+    /// <summary>
+    /// Applies one point of health Damage to the player.
+    /// </summary>
+    public void Damage()
+    {
+        _health--;
+
+        if (_health < 1)
+        {
+            Destroy(this.gameObject);
+        }
     }
 }
