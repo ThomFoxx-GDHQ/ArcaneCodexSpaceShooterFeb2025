@@ -8,12 +8,18 @@ public class Enemy : MonoBehaviour
     [SerializeField] float _topbounds;
     [SerializeField] float _bottombounds;
     [SerializeField] float _leftBounds;
-    [SerializeField] float _rightBounds;   
+    [SerializeField] float _rightBounds;
+    private SpawnManager _spawnManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-        
+        _spawnManager = GameObject.FindFirstObjectByType<SpawnManager>();
+        if (_spawnManager == null)
+        {
+            Debug.LogError("SpawnManager is Null!!!");
+            Destroy(gameObject);
+        }
     }
 
     // Update is called once per frame
@@ -32,7 +38,7 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    private void OnTriggerEnter(Collider other)
+    private void OnTriggerEnter2D(Collider2D other)
     {
         //Debug.Log($"Hit: {other.name}");
         if (other.CompareTag("Player"))
@@ -47,12 +53,18 @@ public class Enemy : MonoBehaviour
             //    player.damage();
             //}*/
 
-            Destroy(this.gameObject);
+            EnemyDeathSequence();
         }
         if (other.CompareTag("Projectile"))
         {
             Destroy(other.gameObject);
-            Destroy(this.gameObject);
+            EnemyDeathSequence();
         }
+    }
+
+    private void EnemyDeathSequence()
+    {
+        _spawnManager.OnEnemyDeath();
+        Destroy(this.gameObject);
     }
 }

@@ -1,6 +1,5 @@
 using System.Collections;
 using UnityEngine;
-using UnityEngine.VFX;
 
 public class Player : MonoBehaviour
 {
@@ -21,10 +20,12 @@ public class Player : MonoBehaviour
     bool _isFiring = false;
     Coroutine _fireCoroutine = null;
     WaitForSeconds _fireTime;
+    SpawnManager _spawnManager;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        _spawnManager = GameObject.FindFirstObjectByType<SpawnManager>();
         _fireTime = new WaitForSeconds(_fireRate);
     }
 
@@ -119,6 +120,7 @@ public class Player : MonoBehaviour
 
         if (_health < 1)
         {
+            _spawnManager.OnPlayerDeath();
             Destroy(this.gameObject);
         }
     }
