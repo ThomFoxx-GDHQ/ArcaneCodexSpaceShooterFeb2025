@@ -57,7 +57,7 @@ public class Enemy : MonoBehaviour
         }
         if (other.CompareTag("Projectile"))
         {
-            Destroy(other.gameObject);
+            other.GetComponent<Laser>()?.DestroyObjectAndParent();
             EnemyDeathSequence();
         }
     }

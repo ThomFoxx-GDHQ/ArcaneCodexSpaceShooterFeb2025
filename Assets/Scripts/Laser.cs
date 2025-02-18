@@ -10,6 +10,18 @@ public class Laser : MonoBehaviour
     {
         transform.Translate(_speed * Time.deltaTime * Vector3.up);
         if (transform.position.y > 7)
-            Destroy(this.gameObject);        
+        {
+            DestroyObjectAndParent();
+        }
+    }
+
+    public void DestroyObjectAndParent()
+    {
+        if (transform.parent.childCount <= 1 && !transform.parent.CompareTag("Container"))
+            Destroy(transform.parent.gameObject);
+        else
+            transform.parent = null;
+
+        Destroy(this.gameObject);
     }
 }
