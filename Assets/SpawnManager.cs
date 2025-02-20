@@ -13,7 +13,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private int _maxEnemiesInScene;
     private int _enemiesInScene;
     private bool _isSpawning = true;
-
+    [SerializeField] private GameObject[] _powerupPrefabs;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -21,12 +21,7 @@ public class SpawnManager : MonoBehaviour
         _enemyDelayTimer = new WaitForSeconds(_enemySpawnDelay);
         _spawnPos.y = _topBound;
         StartCoroutine(EnemySpawner());
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
+        StartCoroutine(PowerupSpawner());
     }
 
     IEnumerator EnemySpawner()
@@ -42,6 +37,19 @@ public class SpawnManager : MonoBehaviour
                 _enemiesInScene++;
             }
             yield return _enemyDelayTimer;
+        }
+    }
+
+    IEnumerator PowerupSpawner()
+    {
+        while (_isSpawning)
+        {
+            float randomSpawnPOS = Random.Range(-_leftRightBounds, _leftRightBounds);
+            _spawnPos.x = randomSpawnPOS;
+            int randomPowerup = Random.Range(0, _powerupPrefabs.Length);
+
+            Instantiate(_powerupPrefabs[randomPowerup], _spawnPos, Quaternion.identity);
+            yield return new WaitForSeconds(1);
         }
     }
 

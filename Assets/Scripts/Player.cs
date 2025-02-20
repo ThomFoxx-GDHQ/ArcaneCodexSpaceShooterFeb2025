@@ -3,7 +3,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
-    [SerializeField] private float _speed = 5f;
+    [SerializeField] private float _normalSpeed = 5f;
+    [SerializeField] private float _speedBooostMultiplier = 3f;
     private int _health = 3;
 
     float _horizontalInput;
@@ -22,7 +23,8 @@ public class Player : MonoBehaviour
     Coroutine _fireCoroutine = null;
     WaitForSeconds _fireTime;
     SpawnManager _spawnManager;
-    [SerializeField] bool _isTripleActive;
+    bool _isTripleActive;
+    bool _isSpeedBoostActive;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -66,7 +68,10 @@ public class Player : MonoBehaviour
         _direction.y = _verticalInput;
 
         //Use Direction to Translate
-        transform.Translate(Time.deltaTime * _speed * _direction);
+        if (_isSpeedBoostActive) 
+            transform.Translate(Time.deltaTime *_normalSpeed * _speedBooostMultiplier *_direction);
+        else
+            transform.Translate(Time.deltaTime * _normalSpeed * _direction);
     }
 
     private void Bounds()
@@ -139,5 +144,17 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(5f);
         _isTripleActive = false;
+    }
+
+    public void ActivateSpeedBoost()
+    {
+        _isSpeedBoostActive = true;
+        StartCoroutine(SpeedBoostShutdownRoutine());
+    }
+
+    IEnumerator SpeedBoostShutdownRoutine()
+    {
+        yield return new WaitForSeconds(5f);
+        _isSpeedBoostActive = false;
     }
 }
