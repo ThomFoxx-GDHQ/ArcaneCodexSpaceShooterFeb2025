@@ -43,7 +43,7 @@ public class Enemy : MonoBehaviour
         //Debug.Log($"Hit: {other.name}");
         if (other.CompareTag("Player"))
         { 
-            Debug.Log("Hit Player");
+            //Debug.Log("Hit Player");
             other.GetComponent<Player>()?.Damage();
 
             /*

@@ -15,18 +15,23 @@ public class Powerup : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        CalculateMovement();
+    }
+
+    void CalculateMovement()
+    {
         transform.Translate(Vector3.down * (_speed * Time.deltaTime));
 
         if (transform.position.y < _bottomBounds)
         {
-            Debug.Log(transform.position.y);
+            //Debug.Log(transform.position.y);
             Destroy(this.gameObject);
         }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
     {
-        Debug.Log($"Hit: {other.name}");
+        //Debug.Log($"Hit: {other.name}");
         if (other.CompareTag("Player"))
         {
             switch (_powerTypeID)
@@ -36,6 +41,9 @@ public class Powerup : MonoBehaviour
                     break;
                 case PowerupType.SpeedBoost:
                     other.GetComponent<Player>()?.ActivateSpeedBoost();
+                    break;
+                case PowerupType.Shield:
+                    other.GetComponent<Player>()?.ActivateShield();
                     break;
                 default:
                     break;

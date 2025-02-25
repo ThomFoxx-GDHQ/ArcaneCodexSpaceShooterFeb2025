@@ -25,12 +25,24 @@ public class Player : MonoBehaviour
     SpawnManager _spawnManager;
     bool _isTripleActive;
     bool _isSpeedBoostActive;
+    [SerializeField] GameObject _shieldVisual;
+    bool _isShieldActive;
+    [SerializeField, Tooltip("This is the default length added to the Triple Shot Timer when a Powerup is caught.")] 
+    float _defaultTripleShotTimerLength = 5f;
+    float _tripleShotTimer = 0f;
+    Coroutine _tripleShotCoroutine;
+    [SerializeField, Tooltip("This is the default length added to the Speed Boost Timer when a Powerup is caught.")]
+    float _defaultSpeedBoostTimerLength = 5f;
+    float _speedBoostTimer = 0f;
+    Coroutine _speedBoostCoroutine;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _spawnManager = GameObject.FindFirstObjectByType<SpawnManager>();
         _fireTime = new WaitForSeconds(_fireRate);
+        _shieldVisual?.SetActive(false);
     }
 
     // Update is called once per frame
@@ -125,6 +137,13 @@ public class Player : MonoBehaviour
     /// </summary>
     public void Damage()
     {
+        if (_isShieldActive)
+        {
+            _isShieldActive = false;
+            _shieldVisual?.SetActive(false);
+            return;
+        }
+
         _health--;
 
         if (_health < 1)
@@ -137,24 +156,50 @@ public class Player : MonoBehaviour
     public void ActivateTripleShot()
     {
         _isTripleActive = true;
-        StartCoroutine(TripleShotShutdownRoutine());
+        if (_tripleShotCoroutine == null)
+            _tripleShotCoroutine = StartCoroutine(TripleShotShutdownRoutine());
+        else
+            _tripleShotTimer += _defaultTripleShotTimerLength;        
     }
 
     IEnumerator TripleShotShutdownRoutine()
     {
-        yield return new WaitForSeconds(5f);
+        _tripleShotTimer = _defaultTripleShotTimerLength;
+        while (_tripleShotTimer >= 0)
+        {
+            _tripleShotTimer -= Time.deltaTime;
+            yield return null;
+        }
         _isTripleActive = false;
+        _tripleShotTimer = 0;
+        _tripleShotCoroutine = null;
     }
 
     public void ActivateSpeedBoost()
     {
         _isSpeedBoostActive = true;
-        StartCoroutine(SpeedBoostShutdownRoutine());
+        if (_speedBoostCoroutine == null)
+            _speedBoostCoroutine = StartCoroutine(SpeedBoostShutdownRoutine());
+        else
+            _speedBoostTimer += _defaultSpeedBoostTimerLength;
     }
 
     IEnumerator SpeedBoostShutdownRoutine()
     {
-        yield return new WaitForSeconds(5f);
+        _speedBoostTimer = _defaultSpeedBoostTimerLength;
+        while (_speedBoostTimer >= 0)
+        {
+            _speedBoostTimer -= Time.deltaTime;
+            yield return null;
+        }
         _isSpeedBoostActive = false;
+        _speedBoostTimer = 0;
+        _speedBoostCoroutine = null;
+    }
+
+    public void ActivateShield()
+    {
+        _isShieldActive = true;
+        _shieldVisual?.SetActive(true);
     }
 }
