@@ -3,6 +3,10 @@ using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
 {
+    private static SpawnManager _instance;
+    public static SpawnManager Instance
+    { get { return _instance; } }
+
     [SerializeField] private GameObject _enemyPrefab;
     [SerializeField] private float _leftRightBounds = 9f;
     [SerializeField] private float _topBound = 7;
@@ -14,6 +18,12 @@ public class SpawnManager : MonoBehaviour
     private int _enemiesInScene;
     private bool _isSpawning = true;
     [SerializeField] private GameObject[] _powerupPrefabs;
+
+    private void Awake()
+    {
+        _instance = this;
+    }
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()

@@ -35,12 +35,12 @@ public class Player : MonoBehaviour
     float _defaultSpeedBoostTimerLength = 5f;
     float _speedBoostTimer = 0f;
     Coroutine _speedBoostCoroutine;
+    
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    {
-        _spawnManager = GameObject.FindFirstObjectByType<SpawnManager>();
+    {        
         _fireTime = new WaitForSeconds(_fireRate);
         _shieldVisual?.SetActive(false);
     }
@@ -148,7 +148,7 @@ public class Player : MonoBehaviour
 
         if (_health < 1)
         {
-            _spawnManager.OnPlayerDeath();
+            SpawnManager.Instance.OnPlayerDeath();
             Destroy(this.gameObject);
         }
     }
