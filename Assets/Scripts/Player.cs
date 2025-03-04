@@ -40,7 +40,8 @@ public class Player : MonoBehaviour
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
-    {        
+    {
+        UIManager.Instance.UpdateLives(3);
         _fireTime = new WaitForSeconds(_fireRate);
         _shieldVisual?.SetActive(false);
     }
@@ -145,10 +146,12 @@ public class Player : MonoBehaviour
         }
 
         _health--;
+        UIManager.Instance.UpdateLives(_health);
 
         if (_health < 1)
         {
             SpawnManager.Instance.OnPlayerDeath();
+            GameManager.Instance.GameOver();
             Destroy(this.gameObject);
         }
     }
