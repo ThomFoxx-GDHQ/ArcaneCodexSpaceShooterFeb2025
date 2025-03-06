@@ -192,3 +192,4 @@ MonoBehaviour:
   _speed: 5
   _bottomBounds: -10
   _powerTypeID: 0
+  _clip: {fileID: 8300000, guid: 5ee343246919d2b4bba63ae629e95494, type: 3}

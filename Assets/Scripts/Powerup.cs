@@ -6,6 +6,8 @@ public class Powerup : MonoBehaviour
     [SerializeField] float _speed = 5f;
     [SerializeField] float _bottomBounds = -10f;
     [SerializeField] PowerupType _powerTypeID;
+    
+    [SerializeField] AudioClip _clip;
 
     private void Start()
     {
@@ -37,18 +39,18 @@ public class Powerup : MonoBehaviour
             switch (_powerTypeID)
             {
                 case PowerupType.TripleShot:
-                    other.GetComponent<Player>()?.ActivateTripleShot();
+                    other.GetComponentInParent<Player>()?.ActivateTripleShot();
                     break;
                 case PowerupType.SpeedBoost:
-                    other.GetComponent<Player>()?.ActivateSpeedBoost();
+                    other.GetComponentInParent<Player>()?.ActivateSpeedBoost();
                     break;
                 case PowerupType.Shield:
-                    other.GetComponent<Player>()?.ActivateShield();
+                    other.GetComponentInParent<Player>()?.ActivateShield();
                     break;
                 default:
                     break;
             }
-
+            AudioSource.PlayClipAtPoint(_clip, transform.position);
             Destroy(this.gameObject);
         }
     }

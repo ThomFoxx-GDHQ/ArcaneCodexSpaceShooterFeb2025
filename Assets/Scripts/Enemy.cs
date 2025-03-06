@@ -9,7 +9,9 @@ public class Enemy : MonoBehaviour
     [SerializeField] float _bottombounds;
     [SerializeField] float _leftBounds;
     [SerializeField] float _rightBounds;
-    
+
+    [SerializeField] GameObject _explosion;
+    [SerializeField] Vector3 _explosionScale;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -37,7 +39,7 @@ public class Enemy : MonoBehaviour
     {        
         if (other.CompareTag("Player"))
         { 
-            other.GetComponent<Player>()?.Damage();
+            other.GetComponentInParent<Player>()?.Damage();
             EnemyDeathSequence();
         }
         if (other.CompareTag("Projectile"))
@@ -51,7 +53,8 @@ public class Enemy : MonoBehaviour
     private void EnemyDeathSequence()
     {
         SpawnManager.Instance.OnEnemyDeath();
-        
+        GameObject go = Instantiate(_explosion, transform.position, Quaternion.identity);
+        go.transform.localScale = _explosionScale;
         Destroy(this.gameObject);
     }
 }

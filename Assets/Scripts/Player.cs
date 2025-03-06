@@ -35,6 +35,7 @@ public class Player : MonoBehaviour
     float _defaultSpeedBoostTimerLength = 5f;
     float _speedBoostTimer = 0f;
     Coroutine _speedBoostCoroutine;
+    bool _isDead = false;
     
 
 
@@ -49,6 +50,8 @@ public class Player : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
+        if (_isDead) return;
+
         CalculateMovement();
         Bounds();
 
@@ -152,7 +155,9 @@ public class Player : MonoBehaviour
         {
             SpawnManager.Instance.OnPlayerDeath();
             GameManager.Instance.GameOver();
-            Destroy(this.gameObject);
+            //Destroy(this.gameObject); ::Replaced::
+            transform.GetChild(0).gameObject.SetActive(false);
+            _isDead = true;
         }
     }
 

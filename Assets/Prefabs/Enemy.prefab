@@ -52,6 +52,8 @@ MonoBehaviour:
   _bottombounds: -7
   _leftBounds: -9
   _rightBounds: 9
+  _explosion: {fileID: 3436707506184480900, guid: 8bc5180bd45ed724ab939b4e501667f0, type: 3}
+  _explosionScale: {x: 1, y: 1, z: 1}
 --- !u!212 &6102722630527819351
 SpriteRenderer:
   m_ObjectHideFlags: 0
