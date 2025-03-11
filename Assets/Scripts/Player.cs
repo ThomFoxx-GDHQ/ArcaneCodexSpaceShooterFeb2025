@@ -36,7 +36,7 @@ public class Player : MonoBehaviour
     float _speedBoostTimer = 0f;
     Coroutine _speedBoostCoroutine;
     bool _isDead = false;
-    
+    [SerializeField] private DamageVisuals _damageVisuals;   
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -45,6 +45,9 @@ public class Player : MonoBehaviour
         UIManager.Instance.UpdateLives(3);
         _fireTime = new WaitForSeconds(_fireRate);
         _shieldVisual?.SetActive(false);
+
+        _damageVisuals ??= GetComponentInChildren<DamageVisuals>();
+        _damageVisuals.ApplyVisualDamage(_health);
     }
 
     // Update is called once per frame
@@ -150,6 +153,7 @@ public class Player : MonoBehaviour
 
         _health--;
         UIManager.Instance.UpdateLives(_health);
+        _damageVisuals.ApplyVisualDamage(_health);
 
         if (_health < 1)
         {

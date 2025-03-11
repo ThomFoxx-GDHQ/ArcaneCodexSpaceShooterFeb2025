@@ -12,25 +12,25 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0b2db86121404754db890f4c8dfe81b2, type: 3}
   m_Name: Bloom
   m_EditorClassIdentifier: 
-  active: 1
+  active: 0
   skipIterations:
     m_OverrideState: 0
     m_Value: 1
   threshold:
     m_OverrideState: 1
-    m_Value: 5.94
+    m_Value: 0
   intensity:
     m_OverrideState: 1
-    m_Value: 1.53
+    m_Value: 3.19
   scatter:
     m_OverrideState: 0
-    m_Value: 0.357
+    m_Value: 0.984
   clamp:
     m_OverrideState: 0
     m_Value: 65472
   tint:
     m_OverrideState: 0
-    m_Value: {r: 0.7830189, g: 0.40997687, b: 0.40997687, a: 1}
+    m_Value: {r: 1, g: 0.06132078, b: 0.06132078, a: 1}
   highQualityFiltering:
     m_OverrideState: 0
     m_Value: 0
