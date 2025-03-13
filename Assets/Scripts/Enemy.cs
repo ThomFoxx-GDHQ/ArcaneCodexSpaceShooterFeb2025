@@ -1,3 +1,4 @@
+using Unity.VisualScripting;
 using UnityEngine;
 
 public class Enemy : MonoBehaviour
@@ -10,19 +11,39 @@ public class Enemy : MonoBehaviour
     [SerializeField] float _leftBounds;
     [SerializeField] float _rightBounds;
 
+    [Header("Laser Stuff")]
+    [SerializeField] Transform _leftLaserPoint;
+    [SerializeField] Transform _rightLaserPoint;
+    [SerializeField] GameObject _laserPrefab;
+    [SerializeField] float _fireRate;
+    float _whenCanFire = -1;
+    [SerializeField] Transform _laserContainer;
+    GameObject _laser;
+
+    [Space(10)]
     [SerializeField] GameObject _explosion;
     [SerializeField] Vector3 _explosionScale;
+
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
-      
+        _laserContainer = GameObject.Find("LaserContainer").transform;
     }
 
     // Update is called once per frame
     void Update()
     {
         CalculateMovement();
+
+        if (Time.time > _whenCanFire)
+        {
+            FireLaser(_leftLaserPoint.position);
+            FireLaser(_rightLaserPoint.position);
+
+            _whenCanFire = Time.time + _fireRate;
+        }
     }
     
     private void CalculateMovement()
@@ -35,6 +56,12 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    private void FireLaser(Vector3 spawnPOS)
+    {
+        _laser = Instantiate(_laserPrefab, spawnPOS, Quaternion.identity, _laserContainer);
+        _laser.GetComponent<Laser>()?.AssignLaser(true, true);
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {        
         if (other.CompareTag("Player"))
@@ -44,9 +71,13 @@ public class Enemy : MonoBehaviour
         }
         if (other.CompareTag("Projectile"))
         {
-            other.GetComponent<Laser>()?.DestroyObjectAndParent();
-            GameManager.Instance.AddToScore(10);
-            EnemyDeathSequence();
+            Laser laser = other.GetComponent<Laser>();
+            if (laser != null && !laser.IsEnemyLaser)
+            {
+                laser.DestroyObjectAndParent();
+                GameManager.Instance.AddToScore(10);
+                EnemyDeathSequence();
+            }
         }
     }
 

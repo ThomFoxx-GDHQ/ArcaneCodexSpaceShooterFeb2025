@@ -47,7 +47,7 @@ public class Player : MonoBehaviour
         _shieldVisual?.SetActive(false);
 
         _damageVisuals ??= GetComponentInChildren<DamageVisuals>();
-        _damageVisuals.ApplyVisualDamage(_health);
+        _damageVisuals?.ApplyVisualDamage(_health);
     }
 
     // Update is called once per frame
@@ -153,7 +153,7 @@ public class Player : MonoBehaviour
 
         _health--;
         UIManager.Instance.UpdateLives(_health);
-        _damageVisuals.ApplyVisualDamage(_health);
+        _damageVisuals?.ApplyVisualDamage(_health);
 
         if (_health < 1)
         {
@@ -213,5 +213,18 @@ public class Player : MonoBehaviour
     {
         _isShieldActive = true;
         _shieldVisual?.SetActive(true);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if(other.transform.CompareTag("Projectile"))
+        { 
+            Laser laser = other.GetComponent<Laser>();
+            if (laser != null && laser.IsEnemyLaser)
+            {
+                Damage();
+                Destroy(other.gameObject);
+            }
+        }
     }
 }

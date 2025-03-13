@@ -3,13 +3,33 @@ using UnityEngine;
 public class Laser : MonoBehaviour
 {
     [SerializeField] float _speed = 5f;
-    
+    private bool _isMovingDown;
+    private bool _isEnemyLaser;
+
+    public bool IsEnemyLaser => _isEnemyLaser;
 
     // Update is called once per frame
     void Update()
     {
+        if (_isMovingDown)
+            MoveDown();
+        else
+            MoveUp();
+    }
+
+    private void MoveUp()
+    {
         transform.Translate(_speed * Time.deltaTime * Vector3.up);
         if (transform.position.y > 7)
+        {
+            DestroyObjectAndParent();
+        }
+    }
+
+    private void MoveDown()
+    {
+        transform.Translate(_speed * Time.deltaTime * Vector3.down);
+        if (transform.position.y < -7)
         {
             DestroyObjectAndParent();
         }
@@ -23,5 +43,16 @@ public class Laser : MonoBehaviour
             transform.parent = null;
 
         Destroy(this.gameObject);
+    }
+
+    /// <summary>
+    /// Assigns the Direction and ownership of the Laser being fired
+    /// </summary>
+    /// <param name="movingDown"> Is the Laser moving Down the Screen </param>
+    /// <param name="enemyLaser"> Is this Laser being Fired by the Enemy Types</param>
+    public void AssignLaser(bool movingDown, bool enemyLaser)
+    {
+        _isMovingDown = movingDown;
+        _isEnemyLaser = enemyLaser;
     }
 }
