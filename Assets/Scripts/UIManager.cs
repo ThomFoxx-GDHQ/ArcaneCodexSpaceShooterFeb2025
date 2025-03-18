@@ -16,6 +16,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] Sprite[] _livesSprites;
     [SerializeField] GameObject _extraDisplay;
     [SerializeField] GameObject _gameOverText;
+    [SerializeField] Slider _thrusterSlider;
+    [SerializeField] Image _thrusterImage;
 
     private void Awake()
     {
@@ -64,5 +66,24 @@ public class UIManager : MonoBehaviour
             _gameOverText.SetActive(false);
             yield return new WaitForSeconds(.25f);
         }
+    }
+
+    //public void UpdateThrustSlider(float heatValue)
+    //{
+    //    if (heatValue == 0)
+    //    {
+    //        _thrusterSlider.gameObject.SetActive(false);
+    //    }
+    //    else if (!_thrusterSlider.gameObject.activeInHierarchy)
+    //    {
+    //        _thrusterSlider.gameObject.SetActive(true);
+    //    }
+
+    //    _thrusterSlider.SetValueWithoutNotify(heatValue);
+    //}
+
+    public void UpdateThrustSlider(float heatValue)
+    {
+        _thrusterImage.fillAmount = heatValue / 100;
     }
 }

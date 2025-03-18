@@ -5,6 +5,8 @@ public class Player : MonoBehaviour
 {
     [SerializeField] private float _normalSpeed = 5f;
     [SerializeField] private float _speedBooostMultiplier = 3f;
+    [SerializeField] private float _thrustBoostMultiplier = 2f;
+    private float _thrustMultiplier = 1;
     private int _health = 3;
 
     float _horizontalInput;
@@ -36,8 +38,18 @@ public class Player : MonoBehaviour
     float _speedBoostTimer = 0f;
     Coroutine _speedBoostCoroutine;
     bool _isDead = false;
-    [SerializeField] private DamageVisuals _damageVisuals;   
+    [SerializeField] private DamageVisuals _damageVisuals;
 
+    private bool _isThrusting;
+    [SerializeField] private Vector2 _minMaxHeat;
+    private float _currentHeat;
+    private bool _engineOverheated = false;
+    private bool _canThrust = true;
+    [SerializeField] private float _thrustRate = 5f;
+    [SerializeField] private float _normalThrustCooldownRate = 4f;
+    [SerializeField] private float _overheatThrustCooldownRate = 2f;
+    private float _thrustCoolDownRate;
+    [SerializeField] private float _overheatLimiter = 50f;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -48,6 +60,8 @@ public class Player : MonoBehaviour
 
         _damageVisuals ??= GetComponentInChildren<DamageVisuals>();
         _damageVisuals?.ApplyVisualDamage(_health);
+        _currentHeat = _minMaxHeat.x;
+        UIManager.Instance.UpdateThrustSlider(_currentHeat);
     }
 
     // Update is called once per frame
@@ -55,6 +69,7 @@ public class Player : MonoBehaviour
     {
         if (_isDead) return;
 
+        ThrusterCalculations();
         CalculateMovement();
         Bounds();
 
@@ -72,7 +87,61 @@ public class Player : MonoBehaviour
                 StopCoroutine(_fireCoroutine);
             }
         }
+    }
 
+    private void ThrusterCalculations()
+    {
+
+        if (Input.GetKeyDown(KeyCode.LeftShift) && _canThrust)
+        {
+            _thrustMultiplier = _thrustBoostMultiplier;
+            _isThrusting = true;
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift))
+        {
+            _thrustMultiplier = 1;
+            _isThrusting = false;
+        }
+
+        //Increase heat while Thursting
+        if (_isThrusting && _currentHeat < _minMaxHeat.y)
+        {
+            _currentHeat += _thrustRate * Time.deltaTime;
+        }
+        else if (_currentHeat >= _minMaxHeat.y)
+        {
+            _currentHeat = _minMaxHeat.y;
+        }
+
+        if (_currentHeat == _minMaxHeat.y)
+        {
+            _engineOverheated = true;
+            _thrustMultiplier = 1;
+            _thrustCoolDownRate = _overheatThrustCooldownRate;
+            _canThrust = false;
+        }
+        else if (_engineOverheated == false)
+        {
+            _thrustCoolDownRate = _normalThrustCooldownRate;
+        }
+
+        if (_engineOverheated && _currentHeat < _overheatLimiter)
+        {
+            _canThrust = true;
+        }
+
+        //Decrease heat while not thrusting
+        if (!_isThrusting && _currentHeat > _minMaxHeat.x)
+        {
+            _currentHeat -= _thrustCoolDownRate * Time.deltaTime;
+        }
+        else if (_currentHeat < _minMaxHeat.x)
+        {
+            _currentHeat = _minMaxHeat.x;
+            _engineOverheated = false;
+        }
+
+        UIManager.Instance.UpdateThrustSlider(_currentHeat);
     }
 
     private void CalculateMovement()
@@ -87,10 +156,10 @@ public class Player : MonoBehaviour
         _direction.y = _verticalInput;
 
         //Use Direction to Translate
-        if (_isSpeedBoostActive) 
-            transform.Translate(Time.deltaTime *_normalSpeed * _speedBooostMultiplier *_direction);
+        if (_isSpeedBoostActive)
+            transform.Translate(Time.deltaTime * _normalSpeed * _speedBooostMultiplier * _thrustMultiplier * _direction);
         else
-            transform.Translate(Time.deltaTime * _normalSpeed * _direction);
+            transform.Translate(Time.deltaTime * _normalSpeed * _thrustMultiplier * _direction);        
     }
 
     private void Bounds()
@@ -99,27 +168,17 @@ public class Player : MonoBehaviour
 
         _position.y = Mathf.Clamp(_position.y, _lowerBounds, _upperBounds);
 
-        if (Mathf.Abs(_position.x) >= _leftRightBounds)
+        if (Mathf.Abs(_position.x) > _leftRightBounds)
+        {
             _position.x = _position.x * -1;
 
-        transform.position = _position;
+            if (_position.x < 0)
+                _position.x += .05f;
+            else
+                _position.x -= .05f;
+        }
 
-        //if (transform.position.y <= -5)
-        //{
-        //    position.y = -5;
-        //}
-        //if (transform.position.y >= 0)
-        //{
-        //    position.y = 0;
-        //}
-        //if (transform.position.x <= -9.25f)
-        //{
-        //    position.x = -9.25f;
-        //}
-        //if (transform.position.x >= 9.25f)
-        //{
-        //    position.x = 9.25f;
-        //}
+        transform.position = _position;
     }
 
     IEnumerator FireSequence()
