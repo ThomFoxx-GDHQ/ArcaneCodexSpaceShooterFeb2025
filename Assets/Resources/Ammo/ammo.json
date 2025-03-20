@@ -1,0 +1,21 @@
+{
+    "frames": {
+        "ammo_rotate_1.png": {
+            "frame": { "x": 0, "y": 0, "w": 1500, "h": 1500 }
+        },
+        "ammo_rotate_2.png": {
+            "frame": { "x": 1500, "y": 0, "w": 1500, "h": 1500 }
+        },
+        "ammo_rotate_3.png": {
+            "frame": { "x": 0, "y": 1500, "w": 1500, "h": 1500 }
+        },
+        "ammo_rotate_4.png": {
+            "frame": { "x": 1500, "y": 1500, "w": 1500, "h": 1500 }
+        }
+    },
+    "meta": {
+        "format": "RGBA8888",
+        "size": { "w": 3000, "h": 3000 },
+        "scale": "1"
+    }
+}

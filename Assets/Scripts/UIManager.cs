@@ -16,8 +16,9 @@ public class UIManager : MonoBehaviour
     [SerializeField] Sprite[] _livesSprites;
     [SerializeField] GameObject _extraDisplay;
     [SerializeField] GameObject _gameOverText;
-    [SerializeField] Slider _thrusterSlider;
     [SerializeField] Image _thrusterImage;
+    [SerializeField] Image _shieldMeter;
+    [SerializeField] Sprite[] _shieldMeterSprites;
 
     private void Awake()
     {
@@ -51,6 +52,19 @@ public class UIManager : MonoBehaviour
         if (currentLives == 0)
             OnGameOver();
     }
+
+    public void UpdateShieldMeter(int shieldHealth)
+    {
+        if (shieldHealth < _shieldMeterSprites.Length && shieldHealth >= 0)
+            _shieldMeter.sprite = _shieldMeterSprites[shieldHealth];
+        else
+            _shieldMeter.sprite = _shieldMeterSprites[0];
+
+        if (shieldHealth == 0)
+            _shieldMeter.gameObject.SetActive(false);
+        else if (!_shieldMeter.gameObject.activeInHierarchy)
+            _shieldMeter.gameObject.SetActive(true);
+    }
     
     public void OnGameOver()
     {
@@ -68,22 +82,13 @@ public class UIManager : MonoBehaviour
         }
     }
 
-    //public void UpdateThrustSlider(float heatValue)
-    //{
-    //    if (heatValue == 0)
-    //    {
-    //        _thrusterSlider.gameObject.SetActive(false);
-    //    }
-    //    else if (!_thrusterSlider.gameObject.activeInHierarchy)
-    //    {
-    //        _thrusterSlider.gameObject.SetActive(true);
-    //    }
-
-    //    _thrusterSlider.SetValueWithoutNotify(heatValue);
-    //}
-
     public void UpdateThrustSlider(float heatValue)
     {
+        if (heatValue == 0)
+            _thrusterImage.gameObject.SetActive(false);
+        else if (!_thrusterImage.gameObject.activeInHierarchy)
+            _thrusterImage.gameObject.SetActive(true);
+
         _thrusterImage.fillAmount = heatValue / 100;
     }
 }

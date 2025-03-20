@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class Player : MonoBehaviour
 {
+    #region Variables
+    [Header("Speed Settings")]
     [SerializeField] private float _normalSpeed = 5f;
     [SerializeField] private float _speedBooostMultiplier = 3f;
     [SerializeField] private float _thrustBoostMultiplier = 2f;
@@ -13,10 +15,12 @@ public class Player : MonoBehaviour
     float _verticalInput;
     Vector3 _direction = Vector3.zero;
     Vector3 _position = Vector3.zero;
-
-    [SerializeField] float _upperBounds, _lowerBounds;
+    [Header("Boundaries")]
+    [SerializeField] float _upperBounds;
+    [SerializeField] float _lowerBounds;
     [SerializeField] float _leftRightBounds;
 
+    [Header("Weapon Setting")]
     [SerializeField] Transform _laserContainer;
     [SerializeField] GameObject _laserPrefab;
     [SerializeField] GameObject _tripleShotPrefab;
@@ -24,11 +28,19 @@ public class Player : MonoBehaviour
     bool _isFiring = false;
     Coroutine _fireCoroutine = null;
     WaitForSeconds _fireTime;
-    SpawnManager _spawnManager;
     bool _isTripleActive;
     bool _isSpeedBoostActive;
+    [SerializeField] int _startingAmmoCount = 15;
+    int _currentAmmoCount = 0;
+
+    [Header("Shield Settings")]
     [SerializeField] GameObject _shieldVisual;
+    [SerializeField] ShieldVisualization _shieldVisualization;
     bool _isShieldActive;
+    int _currentShieldHealth = 0;
+    [SerializeField] int _maxShieldHealth = 3;
+
+    [Header("Powerup Settings")]
     [SerializeField, Tooltip("This is the default length added to the Triple Shot Timer when a Powerup is caught.")] 
     float _defaultTripleShotTimerLength = 5f;
     float _tripleShotTimer = 0f;
@@ -38,8 +50,11 @@ public class Player : MonoBehaviour
     float _speedBoostTimer = 0f;
     Coroutine _speedBoostCoroutine;
     bool _isDead = false;
+
+    [Header("Damage Settings")]
     [SerializeField] private DamageVisuals _damageVisuals;
 
+    [Header("Thruster Settings")]
     private bool _isThrusting;
     [SerializeField] private Vector2 _minMaxHeat;
     private float _currentHeat;
@@ -50,6 +65,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float _overheatThrustCooldownRate = 2f;
     private float _thrustCoolDownRate;
     [SerializeField] private float _overheatLimiter = 50f;
+
+#endregion
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -62,6 +79,10 @@ public class Player : MonoBehaviour
         _damageVisuals?.ApplyVisualDamage(_health);
         _currentHeat = _minMaxHeat.x;
         UIManager.Instance.UpdateThrustSlider(_currentHeat);
+        UIManager.Instance.UpdateShieldMeter(_currentShieldHealth);
+        _shieldVisualization.UpdateShieldColor(_currentShieldHealth);
+
+        _currentAmmoCount = _startingAmmoCount;
     }
 
     // Update is called once per frame
@@ -192,10 +213,13 @@ public class Player : MonoBehaviour
 
     private void FireLaser()
     {
+        if (_currentAmmoCount == 0) return;
         if (_isTripleActive && _tripleShotPrefab != null)        
             Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity, _laserContainer);
         else if (_laserPrefab != null)
             Instantiate(_laserPrefab, transform.position, Quaternion.identity, _laserContainer);
+
+        _currentAmmoCount--;
     }
 
     /// <summary>
@@ -205,8 +229,16 @@ public class Player : MonoBehaviour
     {
         if (_isShieldActive)
         {
-            _isShieldActive = false;
-            _shieldVisual?.SetActive(false);
+            _currentShieldHealth--;
+
+            if (_currentShieldHealth == 0)
+            {
+                _isShieldActive = false;
+                _shieldVisual?.SetActive(false);
+            }
+
+            UIManager.Instance.UpdateShieldMeter(_currentShieldHealth);
+            _shieldVisualization.UpdateShieldColor(_currentShieldHealth);
             return;
         }
 
@@ -230,7 +262,10 @@ public class Player : MonoBehaviour
         if (_tripleShotCoroutine == null)
             _tripleShotCoroutine = StartCoroutine(TripleShotShutdownRoutine());
         else
-            _tripleShotTimer += _defaultTripleShotTimerLength;        
+            _tripleShotTimer += _defaultTripleShotTimerLength;
+
+        if (_currentAmmoCount <= 5)
+            _currentAmmoCount = 5;
     }
 
     IEnumerator TripleShotShutdownRoutine()
@@ -272,6 +307,9 @@ public class Player : MonoBehaviour
     {
         _isShieldActive = true;
         _shieldVisual?.SetActive(true);
+        _currentShieldHealth = _maxShieldHealth;
+        UIManager.Instance.UpdateShieldMeter(_currentShieldHealth);
+        _shieldVisualization.UpdateShieldColor(_currentShieldHealth);
     }
 
     private void OnTriggerEnter2D(Collider2D other)
