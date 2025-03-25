@@ -6,7 +6,10 @@ public class Powerup : MonoBehaviour
     [SerializeField] float _speed = 5f;
     [SerializeField] float _bottomBounds = -10f;
     [SerializeField] PowerupType _powerTypeID;
-    
+
+    [Tooltip("If Powerup is refill type, enter amount to be refilled, otherwise it is ignored.")]
+    [SerializeField] int _powerupAmount = 5;
+
     [SerializeField] AudioClip _clip;
 
     private void Start()
@@ -46,6 +49,9 @@ public class Powerup : MonoBehaviour
                     break;
                 case PowerupType.Shield:
                     other.GetComponentInParent<Player>()?.ActivateShield();
+                    break;
+                case PowerupType.Ammo:
+                    other.GetComponentInParent<Player>()?.RefillAmmo(_powerupAmount);
                     break;
                 default:
                     break;

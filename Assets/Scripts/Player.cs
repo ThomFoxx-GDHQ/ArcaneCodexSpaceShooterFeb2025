@@ -265,7 +265,7 @@ public class Player : MonoBehaviour
             _tripleShotTimer += _defaultTripleShotTimerLength;
 
         if (_currentAmmoCount <= 5)
-            _currentAmmoCount = 5;
+            RefillAmmo(5);
     }
 
     IEnumerator TripleShotShutdownRoutine()
@@ -310,6 +310,14 @@ public class Player : MonoBehaviour
         _currentShieldHealth = _maxShieldHealth;
         UIManager.Instance.UpdateShieldMeter(_currentShieldHealth);
         _shieldVisualization.UpdateShieldColor(_currentShieldHealth);
+    }
+
+    public void RefillAmmo(int amount)
+    {
+        _currentAmmoCount += amount;
+
+        if (_currentAmmoCount < 0)
+            _currentAmmoCount = 0;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
