@@ -19,6 +19,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] Image _thrusterImage;
     [SerializeField] Image _shieldMeter;
     [SerializeField] Sprite[] _shieldMeterSprites;
+    [SerializeField] TMP_Text _ammoText;
 
     private void Awake()
     {
@@ -90,5 +91,10 @@ public class UIManager : MonoBehaviour
             _thrusterImage.gameObject.SetActive(true);
 
         _thrusterImage.fillAmount = heatValue / 100;
+    }
+
+    public void UpdateAmmo(int ammoCount)
+    {
+        _ammoText.text = $"Ammo: {ammoCount}";
     }
 }

@@ -9,6 +9,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _speedBooostMultiplier = 3f;
     [SerializeField] private float _thrustBoostMultiplier = 2f;
     private float _thrustMultiplier = 1;
+    [SerializeField] private int _maxHealth = 3;
     private int _health = 3;
 
     float _horizontalInput;
@@ -32,7 +33,7 @@ public class Player : MonoBehaviour
     bool _isSpeedBoostActive;
     [SerializeField] int _startingAmmoCount = 15;
     int _currentAmmoCount = 0;
-
+    
     [Header("Shield Settings")]
     [SerializeField] GameObject _shieldVisual;
     [SerializeField] ShieldVisualization _shieldVisualization;
@@ -83,6 +84,7 @@ public class Player : MonoBehaviour
         _shieldVisualization.UpdateShieldColor(_currentShieldHealth);
 
         _currentAmmoCount = _startingAmmoCount;
+        UIManager.Instance.UpdateAmmo(_currentAmmoCount);
     }
 
     // Update is called once per frame
@@ -213,14 +215,20 @@ public class Player : MonoBehaviour
 
     private void FireLaser()
     {
-        if (_currentAmmoCount == 0) return;
+        if (_currentAmmoCount == 0)
+        {
+            AudioManager.Instance.PlayEmptyClip();
+            return;
+        }
         if (_isTripleActive && _tripleShotPrefab != null)        
             Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity, _laserContainer);
         else if (_laserPrefab != null)
             Instantiate(_laserPrefab, transform.position, Quaternion.identity, _laserContainer);
 
         _currentAmmoCount--;
+        UIManager.Instance.UpdateAmmo(_currentAmmoCount);
     }
+
 
     /// <summary>
     /// Applies one point of health Damage to the player.
@@ -318,6 +326,20 @@ public class Player : MonoBehaviour
 
         if (_currentAmmoCount < 0)
             _currentAmmoCount = 0;
+
+        UIManager.Instance.UpdateAmmo(_currentAmmoCount);
+    }
+
+    public void RestoreHealth(int amount)
+    {
+        //Debug.Log($"Health Amount = {amount}");
+        _health += amount;
+
+        if (_health > _maxHealth)
+            _health = _maxHealth;
+
+        UIManager.Instance.UpdateLives(_health);
+        _damageVisuals?.ApplyVisualDamage(_health);
     }
 
     private void OnTriggerEnter2D(Collider2D other)

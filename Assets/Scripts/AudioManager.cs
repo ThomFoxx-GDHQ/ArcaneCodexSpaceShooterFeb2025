@@ -1,16 +1,32 @@
+using UnityEditorInternal;
 using UnityEngine;
 
 public class AudioManager : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
+    private static AudioManager _instance;
+    public static AudioManager Instance
     {
-        
+        get { return _instance; }
     }
 
-    // Update is called once per frame
-    void Update()
+    private void Awake()
     {
-        
+        if (_instance == null)
+            _instance = this;
+    }
+
+    [SerializeField] private AudioSource _emptyClipSound;
+
+    public void PlayEmptyClip()
+    {
+        if (!_emptyClipSound.isPlaying)
+        {
+            _emptyClipSound.Play();
+        }
+        else
+        {
+            _emptyClipSound.Stop();
+            _emptyClipSound.Play();
+        }
     }
 }

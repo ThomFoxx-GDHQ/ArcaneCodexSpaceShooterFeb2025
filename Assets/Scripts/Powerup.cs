@@ -53,6 +53,9 @@ public class Powerup : MonoBehaviour
                 case PowerupType.Ammo:
                     other.GetComponentInParent<Player>()?.RefillAmmo(_powerupAmount);
                     break;
+                case PowerupType.Health:
+                    other.GetComponentInParent<Player>()?.RestoreHealth(_powerupAmount);
+                    break;
                 default:
                     break;
             }
