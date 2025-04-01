@@ -92,6 +92,9 @@ MonoBehaviour:
   _laserContainer: {fileID: 0}
   _explosion: {fileID: 3436707506184480900, guid: 8bc5180bd45ed724ab939b4e501667f0, type: 3}
   _explosionScale: {x: 1, y: 1, z: 1}
+  _cameraController: {fileID: 0}
+  _shakeIntensity: 0.2
+  _shakeTime: 0.5
 --- !u!212 &6102722630527819351
 SpriteRenderer:
   m_ObjectHideFlags: 0

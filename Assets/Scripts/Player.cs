@@ -25,6 +25,7 @@ public class Player : MonoBehaviour
     [SerializeField] Transform _laserContainer;
     [SerializeField] GameObject _laserPrefab;
     [SerializeField] GameObject _tripleShotPrefab;
+    [SerializeField] GameObject _scatterShotPrefab;
     [SerializeField] float _fireRate = 0.0f;
     bool _isFiring = false;
     Coroutine _fireCoroutine = null;
@@ -33,6 +34,7 @@ public class Player : MonoBehaviour
     bool _isSpeedBoostActive;
     [SerializeField] int _startingAmmoCount = 15;
     int _currentAmmoCount = 0;
+    bool _isScatterActive;
     
     [Header("Shield Settings")]
     [SerializeField] GameObject _shieldVisual;
@@ -50,10 +52,19 @@ public class Player : MonoBehaviour
     float _defaultSpeedBoostTimerLength = 5f;
     float _speedBoostTimer = 0f;
     Coroutine _speedBoostCoroutine;
+    [SerializeField, Tooltip("This is the default length added to the Scatter Shot Timer when a Powerup is caught.")]
+    float _defaultScatterShotTimerLength = 5f;
+    float _scatterShotTimer = 0f;
+    Coroutine _scatterShotCoroutine;
     bool _isDead = false;
+
 
     [Header("Damage Settings")]
     [SerializeField] private DamageVisuals _damageVisuals;
+    [SerializeField] private CameraController _cameraController;
+    [Tooltip("Controls the Intensity of the Camera Shake when hit by Laser")]
+    [SerializeField, Range(0, 1)] float _shakeIntensity = .5f;
+    [SerializeField, Range(0, 1)] float _shakeTime = 1f;
 
     [Header("Thruster Settings")]
     private bool _isThrusting;
@@ -220,9 +231,14 @@ public class Player : MonoBehaviour
             AudioManager.Instance.PlayEmptyClip();
             return;
         }
-        if (_isTripleActive && _tripleShotPrefab != null)        
+
+        if (_isTripleActive && _tripleShotPrefab != null)
             Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity, _laserContainer);
-        else if (_laserPrefab != null)
+
+        if (_isScatterActive && _scatterShotPrefab != null)
+            Instantiate(_scatterShotPrefab, transform.position, Quaternion.identity, _laserContainer);
+
+        if ((!_isTripleActive && !_isScatterActive) && _laserPrefab != null)
             Instantiate(_laserPrefab, transform.position, Quaternion.identity, _laserContainer);
 
         _currentAmmoCount--;
@@ -253,6 +269,7 @@ public class Player : MonoBehaviour
         _health--;
         UIManager.Instance.UpdateLives(_health);
         _damageVisuals?.ApplyVisualDamage(_health);
+       
 
         if (_health < 1)
         {
@@ -268,7 +285,12 @@ public class Player : MonoBehaviour
     {
         _isTripleActive = true;
         if (_tripleShotCoroutine == null)
+        {
+            if (_isScatterActive) //Stop Scatter Shot Timer
+                _scatterShotTimer = -1;
+
             _tripleShotCoroutine = StartCoroutine(TripleShotShutdownRoutine());
+        }
         else
             _tripleShotTimer += _defaultTripleShotTimerLength;
 
@@ -342,6 +364,36 @@ public class Player : MonoBehaviour
         _damageVisuals?.ApplyVisualDamage(_health);
     }
 
+    public void ActivateScatterShot()
+    {
+        _isScatterActive = true;
+        if (_scatterShotCoroutine == null)
+        {
+            if (_isTripleActive)    //Stop Triple Shot Timer
+                _tripleShotTimer = -1;
+
+            _scatterShotCoroutine = StartCoroutine(ScatterShotShutdownRoutine());
+        }
+        else
+            _scatterShotTimer += _defaultScatterShotTimerLength;
+
+        if (_currentAmmoCount <= 5)
+            RefillAmmo(5);
+    }
+
+    IEnumerator ScatterShotShutdownRoutine()
+    {
+        _scatterShotTimer = _defaultScatterShotTimerLength;
+        while (_scatterShotTimer >=0)
+        {
+            _scatterShotTimer -= Time.deltaTime;
+            yield return null;
+        }
+        _isScatterActive = false;
+        _scatterShotTimer = 0;
+        _scatterShotCoroutine = null;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if(other.transform.CompareTag("Projectile"))
@@ -350,6 +402,7 @@ public class Player : MonoBehaviour
             if (laser != null && laser.IsEnemyLaser)
             {
                 Damage();
+                _cameraController.StartCameraShake(_shakeIntensity, _shakeTime);
                 Destroy(other.gameObject);
             }
         }

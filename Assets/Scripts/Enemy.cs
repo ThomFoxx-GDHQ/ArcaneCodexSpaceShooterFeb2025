@@ -1,3 +1,4 @@
+using TMPro.Examples;
 using Unity.VisualScripting;
 using UnityEngine;
 
@@ -23,6 +24,10 @@ public class Enemy : MonoBehaviour
     [Space(10)]
     [SerializeField] GameObject _explosion;
     [SerializeField] Vector3 _explosionScale;
+    [SerializeField] CameraController _cameraController; 
+    [Tooltip("Controls the Intensity of the Camera Shake when hitting Player")]
+    [SerializeField, Range(0, 1)] float _shakeIntensity = .5f;
+    [SerializeField, Range(0, 1)] float _shakeTime = 1f;
 
 
 
@@ -30,6 +35,7 @@ public class Enemy : MonoBehaviour
     void Start()
     {
         _laserContainer = GameObject.Find("LaserContainer").transform;
+        _cameraController = Camera.main.GetComponent<CameraController>();
     }
 
     // Update is called once per frame
@@ -67,6 +73,7 @@ public class Enemy : MonoBehaviour
         if (other.CompareTag("Player"))
         { 
             other.GetComponentInParent<Player>()?.Damage();
+            _cameraController.StartCameraShake(_shakeIntensity, _shakeTime);
             EnemyDeathSequence();
         }
         if (other.CompareTag("Projectile"))

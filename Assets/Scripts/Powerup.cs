@@ -56,6 +56,9 @@ public class Powerup : MonoBehaviour
                 case PowerupType.Health:
                     other.GetComponentInParent<Player>()?.RestoreHealth(_powerupAmount);
                     break;
+                case PowerupType.ScatterShot:
+                    other.GetComponentInParent<Player>()?.ActivateScatterShot();
+                    break;
                 default:
                     break;
             }

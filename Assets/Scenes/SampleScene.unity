@@ -160,6 +160,7 @@ MonoBehaviour:
   _laserContainer: {fileID: 519802037}
   _laserPrefab: {fileID: 1223124607803532745, guid: 2d809c9978234004a84842422fe7632c, type: 3}
   _tripleShotPrefab: {fileID: 7794618484452736847, guid: 3a1ea2a914530b245b51f27a8cc4e730, type: 3}
+  _scatterShotPrefab: {fileID: 2234865064087457029, guid: 4350982b9b793b04e9d64bb0c41197c8, type: 3}
   _fireRate: 0.25
   _startingAmmoCount: 15
   _shieldVisual: {fileID: 1269621644}
@@ -167,7 +168,11 @@ MonoBehaviour:
   _maxShieldHealth: 3
   _defaultTripleShotTimerLength: 5
   _defaultSpeedBoostTimerLength: 5
+  _defaultScatterShotTimerLength: 5
   _damageVisuals: {fileID: 542086653}
+  _cameraController: {fileID: 330585548}
+  _shakeIntensity: 0.1
+  _shakeTime: 0.2
   _minMaxHeat: {x: 0, y: 100}
   _thrustRate: 10
   _normalThrustCooldownRate: 4
@@ -182,7 +187,7 @@ Transform:
   m_GameObject: {fileID: 176665490}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0.05, y: -3.35, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 0.25, y: 0.25, z: 0.25}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -349,6 +354,7 @@ MonoBehaviour:
   - {fileID: 4033705795397030228, guid: b0e4c6a174f69f349a00198351525f9f, type: 3}
   - {fileID: 295165357948817341, guid: 0de048dcc575aac4f9b013f996a4edd2, type: 3}
   - {fileID: 5571403027981415139, guid: 379b7e6b0bae5604ea7b502b868b2f13, type: 3}
+  - {fileID: 2758936321073800427, guid: 861e7c9be573e0046b197e7b7e06b0c8, type: 3}
 --- !u!4 &328665789
 Transform:
   m_ObjectHideFlags: 0
@@ -650,6 +656,7 @@ GameObject:
   - component: {fileID: 330585546}
   - component: {fileID: 330585545}
   - component: {fileID: 330585547}
+  - component: {fileID: 330585548}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -767,6 +774,18 @@ MonoBehaviour:
     m_MipBias: 0
     m_VarianceClampScale: 0.9
     m_ContrastAdaptiveSharpening: 0
+--- !u!114 &330585548
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 330585543}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d9f4567c8bd9584ca445a1a0c00b27e, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1 &385374233
 GameObject:
   m_ObjectHideFlags: 0
