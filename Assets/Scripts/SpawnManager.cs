@@ -7,7 +7,7 @@ public class SpawnManager : MonoBehaviour
     public static SpawnManager Instance
     { get { return _instance; } }
 
-    [SerializeField] private GameObject _enemyPrefab;
+    [SerializeField] private GameObject[] _enemyPrefabs;
     [SerializeField] private float _leftRightBounds = 9f;
     [SerializeField] private float _topBound = 7;
     private Vector3 _spawnPos = Vector3.zero;
@@ -41,9 +41,10 @@ public class SpawnManager : MonoBehaviour
             if (_enemiesInScene < _maxEnemiesInScene)
             {
                 float rng = Random.Range(-_leftRightBounds, _leftRightBounds);
+                int randomEnemy = Random.Range(0, _enemyPrefabs.Length);
                 _spawnPos.x = rng;
 
-                Instantiate(_enemyPrefab, _spawnPos, Quaternion.identity, _enemyContainer);
+                Instantiate(_enemyPrefabs[randomEnemy], _spawnPos, Quaternion.identity, _enemyContainer);
                 _enemiesInScene++;
             }
             yield return _enemyDelayTimer;
