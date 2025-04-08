@@ -59,6 +59,9 @@ public class Powerup : MonoBehaviour
                 case PowerupType.ScatterShot:
                     other.GetComponentInParent<Player>()?.ActivateScatterShot();
                     break;
+                case PowerupType.SlowDown:
+                    other.GetComponentInParent<Player>()?.ActivateSlowdown(_powerupAmount);
+                    break;
                 default:
                     break;
             }

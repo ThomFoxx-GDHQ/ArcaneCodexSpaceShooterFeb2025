@@ -20,6 +20,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] Image _shieldMeter;
     [SerializeField] Sprite[] _shieldMeterSprites;
     [SerializeField] TMP_Text _ammoText;
+    [SerializeField] TMP_Text _waveText;
 
     private void Awake()
     {
@@ -96,5 +97,11 @@ public class UIManager : MonoBehaviour
     public void UpdateAmmo(int ammoCount)
     {
         _ammoText.text = $"Ammo: {ammoCount}";
+    }
+
+    public void UpdateWaveText(int waveCount, bool state)
+    {
+        _waveText.gameObject.SetActive(state);
+        _waveText.text = $"Wave {waveCount}";
     }
 }

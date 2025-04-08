@@ -5,5 +5,6 @@ public enum PowerupType
     SpeedBoost,
     Shield,
     Ammo,
-    Health
+    Health,
+    SlowDown
 }

@@ -1,4 +1,5 @@
 using System.Collections;
+using System.Runtime.CompilerServices;
 using UnityEngine;
 
 public class SpawnManager : MonoBehaviour
@@ -19,6 +20,12 @@ public class SpawnManager : MonoBehaviour
     private bool _isSpawning = true;
     [SerializeField] private GameObject[] _powerupPrefabs;
 
+    [SerializeField] private int _waveMultiplier = 5;    
+    private int _enemyWaveCount = 5;
+    private int _spawnedEnemyCount = 0;
+
+    [SerializeField] private int _wave = 0; 
+
     private void Awake()
     {
         _instance = this;
@@ -30,14 +37,39 @@ public class SpawnManager : MonoBehaviour
     {
         _enemyDelayTimer = new WaitForSeconds(_enemySpawnDelay);
         _spawnPos.y = _topBound;
-        StartCoroutine(EnemySpawner());
+        StartCoroutine(WaveAdvance());
+        //StartCoroutine(EnemySpawner());
         StartCoroutine(PowerupSpawner());
+    }
+
+    /*private void WaveAdvance()
+    {
+        _wave++;
+        _enemyWaveCount = _wave * _waveMultiplier;
+        StartCoroutine(EnemySpawner());
+    }*/
+
+    IEnumerator WaveAdvance()
+    {
+        while (_isSpawning)
+        {
+            _wave++;
+            UIManager.Instance.UpdateWaveText(_wave, true);
+            _enemyWaveCount = _wave * _waveMultiplier;
+            yield return StartCoroutine(EnemySpawner());
+            Debug.Log($"Wave # {_wave} has ended.");
+            yield return new WaitForSeconds(5f);
+        }
     }
 
     IEnumerator EnemySpawner()
     {
-        while (_isSpawning)
+        _spawnedEnemyCount = 0;
+        while (_isSpawning && _spawnedEnemyCount < _enemyWaveCount)
         {
+            yield return _enemyDelayTimer;
+            UIManager.Instance.UpdateWaveText(_wave, false);
+
             if (_enemiesInScene < _maxEnemiesInScene)
             {
                 float rng = Random.Range(-_leftRightBounds, _leftRightBounds);
@@ -46,9 +78,12 @@ public class SpawnManager : MonoBehaviour
 
                 Instantiate(_enemyPrefabs[randomEnemy], _spawnPos, Quaternion.identity, _enemyContainer);
                 _enemiesInScene++;
+                _spawnedEnemyCount++;
             }
-            yield return _enemyDelayTimer;
+            
         }
+        yield return _enemyDelayTimer;
+        //WaveAdvance();
     }
 
     IEnumerator PowerupSpawner()

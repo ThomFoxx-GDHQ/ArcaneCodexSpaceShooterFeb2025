@@ -57,7 +57,7 @@ public class Player : MonoBehaviour
     float _scatterShotTimer = 0f;
     Coroutine _scatterShotCoroutine;
     bool _isDead = false;
-
+    float _slowDownMultiplier = 1f;
 
     [Header("Damage Settings")]
     [SerializeField] private DamageVisuals _damageVisuals;
@@ -77,6 +77,8 @@ public class Player : MonoBehaviour
     [SerializeField] private float _overheatThrustCooldownRate = 2f;
     private float _thrustCoolDownRate;
     [SerializeField] private float _overheatLimiter = 50f;
+
+    private bool _wasHit = false;
 
 #endregion
 
@@ -102,6 +104,10 @@ public class Player : MonoBehaviour
     void Update()
     {
         if (_isDead) return;
+        if (_wasHit)
+            _wasHit = false;
+
+
 
         ThrusterCalculations();
         CalculateMovement();
@@ -191,9 +197,9 @@ public class Player : MonoBehaviour
 
         //Use Direction to Translate
         if (_isSpeedBoostActive)
-            transform.Translate(Time.deltaTime * _normalSpeed * _speedBooostMultiplier * _thrustMultiplier * _direction);
+            transform.Translate(Time.deltaTime * (_normalSpeed * _speedBooostMultiplier * _thrustMultiplier * _slowDownMultiplier) * _direction);
         else
-            transform.Translate(Time.deltaTime * _normalSpeed * _thrustMultiplier * _direction);        
+            transform.Translate(Time.deltaTime * (_normalSpeed * _thrustMultiplier * _slowDownMultiplier) * _direction);        
     }
 
     private void Bounds()
@@ -251,6 +257,10 @@ public class Player : MonoBehaviour
     /// </summary>
     public void Damage()
     {
+        if (_wasHit) return;
+
+        _wasHit = true;
+
         if (_isShieldActive)
         {
             _currentShieldHealth--;
@@ -392,6 +402,19 @@ public class Player : MonoBehaviour
         _isScatterActive = false;
         _scatterShotTimer = 0;
         _scatterShotCoroutine = null;
+    }
+
+    public void ActivateSlowdown(int amount)
+    {
+        _slowDownMultiplier = 1f / amount;
+        Debug.Log($"SlowDown = {_slowDownMultiplier}");
+        StartCoroutine(SlowDownRoutine());
+    }
+
+    IEnumerator SlowDownRoutine()
+    {
+        yield return new WaitForSeconds(_defaultSpeedBoostTimerLength);
+        _slowDownMultiplier = 1;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

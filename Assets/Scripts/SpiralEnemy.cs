@@ -73,6 +73,13 @@ public class SpiralEnemy : MonoBehaviour
         _circleOffset.y = Mathf.Sin(_shipTime * _timeStep) * _radius;        
 
         transform.position = _travelLinePosition + _circleOffset;
+
+        if (transform.position.y <= _bottombounds)
+        {
+            float randX = Random.Range(_leftBounds, _rightBounds);
+            transform.position = new Vector2(randX, _topbounds);
+            _travelLinePosition = transform.position;
+        }
     }
 
     private void FireLaser(Vector3 spawnPOS)
