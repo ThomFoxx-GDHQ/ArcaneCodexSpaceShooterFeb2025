@@ -35,6 +35,8 @@ public class Player : MonoBehaviour
     [SerializeField] int _startingAmmoCount = 15;
     int _currentAmmoCount = 0;
     bool _isScatterActive;
+    bool _canFire = true;
+    bool _slowLasers = false;
     
     [Header("Shield Settings")]
     [SerializeField] GameObject _shieldVisual;
@@ -113,20 +115,28 @@ public class Player : MonoBehaviour
         CalculateMovement();
         Bounds();
 
-        //Spawn Laser when hit Space bar
-        if (Input.GetKeyDown(KeyCode.Space) && !_isFiring)
+        if (_canFire)
         {
-            _isFiring = true;
-            _fireCoroutine = StartCoroutine(FireSequence());
-        }
-        if (Input.GetKeyUp(KeyCode.Space))
-        {
-            _isFiring = false;
-            if (_fireCoroutine != null)
+            //Spawn Laser when hit Space bar
+            if (Input.GetKeyDown(KeyCode.Space) && !_isFiring)
             {
-                StopCoroutine(_fireCoroutine);
+                _isFiring = true;
+                _fireCoroutine = StartCoroutine(FireSequence());
+            }
+            if (Input.GetKeyUp(KeyCode.Space))
+            {
+                _isFiring = false;
+                if (_fireCoroutine != null)
+                {
+                    StopCoroutine(_fireCoroutine);
+                }
             }
         }
+        else if (_fireCoroutine != null)
+        {
+            StopCoroutine(_fireCoroutine);
+        }
+
     }
 
     private void ThrusterCalculations()
@@ -238,14 +248,22 @@ public class Player : MonoBehaviour
             return;
         }
 
+        GameObject go = null;
+
         if (_isTripleActive && _tripleShotPrefab != null)
-            Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity, _laserContainer);
+            go = Instantiate(_tripleShotPrefab, transform.position, Quaternion.identity, _laserContainer);
 
         if (_isScatterActive && _scatterShotPrefab != null)
-            Instantiate(_scatterShotPrefab, transform.position, Quaternion.identity, _laserContainer);
+            go = Instantiate(_scatterShotPrefab, transform.position, Quaternion.identity, _laserContainer);
 
         if ((!_isTripleActive && !_isScatterActive) && _laserPrefab != null)
-            Instantiate(_laserPrefab, transform.position, Quaternion.identity, _laserContainer);
+            go = Instantiate(_laserPrefab, transform.position, Quaternion.identity, _laserContainer);
+
+        if (go != null && _slowLasers == true)
+            foreach (Laser laser in go.GetComponentsInChildren<Laser>())
+            {
+                laser.SetSlowLaser();
+            }
 
         _currentAmmoCount--;
         UIManager.Instance.UpdateAmmo(_currentAmmoCount);
@@ -415,6 +433,30 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(_defaultSpeedBoostTimerLength);
         _slowDownMultiplier = 1;
+    }
+
+    public void ActivateWeaponJam()
+    {
+        _canFire = false;
+        StartCoroutine(WeaponJamCoolDown());
+    }
+
+    IEnumerator WeaponJamCoolDown()
+    {
+        yield return new WaitForSeconds(5);
+        _canFire = true;
+    }
+
+    public void ActivateSlowLasers()
+    {
+        _slowLasers = true;
+        StartCoroutine(SlowLaserCoolDown());
+    }
+
+    IEnumerator SlowLaserCoolDown()
+    {
+        yield return new WaitForSeconds(5);
+        _slowLasers = false;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

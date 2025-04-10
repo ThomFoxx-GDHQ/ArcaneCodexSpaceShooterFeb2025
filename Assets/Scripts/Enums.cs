@@ -6,5 +6,7 @@ public enum PowerupType
     Shield,
     Ammo,
     Health,
-    SlowDown
+    SlowDown,
+    WeaponJam,
+    SlowLasers
 }

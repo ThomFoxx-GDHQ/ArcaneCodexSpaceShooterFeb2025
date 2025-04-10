@@ -5,6 +5,8 @@ public class Laser : MonoBehaviour
     [SerializeField] float _speed = 5f;
     private bool _isMovingDown;
     private bool _isEnemyLaser;
+    private float _speedMultiplier = 1f;
+    [SerializeField] float _slowDownMultiplier = .5f;
 
     public bool IsEnemyLaser => _isEnemyLaser;
 
@@ -19,7 +21,7 @@ public class Laser : MonoBehaviour
 
     private void MoveUp()
     {
-        transform.Translate(_speed * Time.deltaTime * Vector3.up);
+        transform.Translate(_speed * _speedMultiplier * Time.deltaTime * Vector3.up);
         if (transform.position.y > 7)
         {
             DestroyObjectAndParent();
@@ -28,7 +30,7 @@ public class Laser : MonoBehaviour
 
     private void MoveDown()
     {
-        transform.Translate(_speed * Time.deltaTime * Vector3.down);
+        transform.Translate(_speed * _speedMultiplier * Time.deltaTime * Vector3.down);
         if (transform.position.y < -7)
         {
             DestroyObjectAndParent();
@@ -54,5 +56,10 @@ public class Laser : MonoBehaviour
     {
         _isMovingDown = movingDown;
         _isEnemyLaser = enemyLaser;
+    }
+
+    public void SetSlowLaser()
+    {
+        _speedMultiplier = _slowDownMultiplier;
     }
 }

@@ -39,28 +39,35 @@ public class Powerup : MonoBehaviour
         //Debug.Log($"Hit: {other.name}");
         if (other.CompareTag("Player"))
         {
+            Player player = other.GetComponentInParent<Player>();
             switch (_powerTypeID)
             {
                 case PowerupType.TripleShot:
-                    other.GetComponentInParent<Player>()?.ActivateTripleShot();
+                    player?.ActivateTripleShot();
                     break;
                 case PowerupType.SpeedBoost:
-                    other.GetComponentInParent<Player>()?.ActivateSpeedBoost();
+                    player?.ActivateSpeedBoost();
                     break;
                 case PowerupType.Shield:
-                    other.GetComponentInParent<Player>()?.ActivateShield();
+                    player?.ActivateShield();
                     break;
                 case PowerupType.Ammo:
-                    other.GetComponentInParent<Player>()?.RefillAmmo(_powerupAmount);
+                    player?.RefillAmmo(_powerupAmount);
                     break;
                 case PowerupType.Health:
-                    other.GetComponentInParent<Player>()?.RestoreHealth(_powerupAmount);
+                    player?.RestoreHealth(_powerupAmount);
                     break;
                 case PowerupType.ScatterShot:
-                    other.GetComponentInParent<Player>()?.ActivateScatterShot();
+                    player?.ActivateScatterShot();
                     break;
                 case PowerupType.SlowDown:
-                    other.GetComponentInParent<Player>()?.ActivateSlowdown(_powerupAmount);
+                    player?.ActivateSlowdown(_powerupAmount);
+                    break;
+                case PowerupType.WeaponJam:
+                    player?.ActivateWeaponJam();
+                    break;
+                case PowerupType.SlowLasers:
+                    player?.ActivateSlowLasers();
                     break;
                 default:
                     break;
