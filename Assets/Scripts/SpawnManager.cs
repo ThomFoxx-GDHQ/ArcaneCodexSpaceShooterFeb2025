@@ -36,7 +36,7 @@ public class SpawnManager : MonoBehaviour
     void Start()
     {
         _enemyDelayTimer = new WaitForSeconds(_enemySpawnDelay);
-        _spawnPos.y = _topBound;
+        
         StartCoroutine(WaveAdvance());
         //StartCoroutine(EnemySpawner());
         StartCoroutine(PowerupSpawner());
@@ -72,15 +72,34 @@ public class SpawnManager : MonoBehaviour
 
             if (_enemiesInScene < _maxEnemiesInScene)
             {
-                float rng = Random.Range(-_leftRightBounds, _leftRightBounds);
                 int randomEnemy = Random.Range(0, _enemyPrefabs.Length);
-                _spawnPos.x = rng;
+                EnemyMovementType type = _enemyPrefabs[randomEnemy].GetComponent<IEnemy>().GetEnemyMovementType();
+
+                float rng;
+                switch (type)
+                {
+                    case EnemyMovementType.TopDown:
+                        _spawnPos.y = _topBound;
+                        rng = Random.Range(-_leftRightBounds, _leftRightBounds);
+                        _spawnPos.x = rng;
+                        break;
+                    case EnemyMovementType.RightLeft:
+                        Debug.LogWarning("Not Implemented Yet");
+                        break;
+                    case EnemyMovementType.LeftRight:
+                        _spawnPos.x = -_leftRightBounds - 2.5f;
+                        rng = Random.Range(1, _topBound - 2);
+                        _spawnPos.y = rng;
+                        break;
+                    default:
+                        break;
+                }
 
                 Instantiate(_enemyPrefabs[randomEnemy], _spawnPos, Quaternion.identity, _enemyContainer);
                 _enemiesInScene++;
                 _spawnedEnemyCount++;
             }
-            
+
         }
         yield return _enemyDelayTimer;
         //WaveAdvance();
@@ -88,8 +107,10 @@ public class SpawnManager : MonoBehaviour
 
     IEnumerator PowerupSpawner()
     {
+        yield return _enemyDelayTimer;
         while (_isSpawning)
         {
+            _spawnPos.y = _topBound;
             float randomSpawnPOS = Random.Range(-_leftRightBounds, _leftRightBounds);
             _spawnPos.x = randomSpawnPOS;
             int randomPowerup = Random.Range(0, _powerupPrefabs.Length);

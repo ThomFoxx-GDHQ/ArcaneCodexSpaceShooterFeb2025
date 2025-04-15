@@ -2,8 +2,9 @@ using TMPro.Examples;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class Enemy : MonoBehaviour
+public class Enemy : MonoBehaviour, IEnemy
 {
+    [SerializeField] EnemyMovementType _enemyMovementType;
     [SerializeField] float _speed = 5f;
 
     [Header("Boundary")]
@@ -29,6 +30,7 @@ public class Enemy : MonoBehaviour
     [SerializeField, Range(0, 1)] float _shakeIntensity = .5f;
     [SerializeField, Range(0, 1)] float _shakeTime = 1f;
 
+    [SerializeField] int _scoreValue = 10;
 
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -82,7 +84,7 @@ public class Enemy : MonoBehaviour
             if (laser != null && !laser.IsEnemyLaser)
             {
                 laser.DestroyObjectAndParent();
-                GameManager.Instance.AddToScore(10);
+                GameManager.Instance.AddToScore(_scoreValue);
                 EnemyDeathSequence();
             }
         }
@@ -94,5 +96,10 @@ public class Enemy : MonoBehaviour
         GameObject go = Instantiate(_explosion, transform.position, Quaternion.identity);
         go.transform.localScale = _explosionScale;
         Destroy(this.gameObject);
+    }
+
+    public EnemyMovementType GetEnemyMovementType()
+    {
+        return _enemyMovementType;
     }
 }

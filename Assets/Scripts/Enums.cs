@@ -10,3 +10,10 @@ public enum PowerupType
     WeaponJam,
     SlowLasers
 }
+
+public enum EnemyMovementType
+{
+    TopDown,
+    RightLeft,
+    LeftRight
+}

@@ -2,8 +2,9 @@ using TMPro.Examples;
 using Unity.VisualScripting;
 using UnityEngine;
 
-public class SpiralEnemy : MonoBehaviour
+public class SpiralEnemy : MonoBehaviour, IEnemy
 {
+    [SerializeField] EnemyMovementType _enemyMovementType;
     [SerializeField] float _speed = 5f;
 
     [Header("Boundary")]
@@ -36,6 +37,8 @@ public class SpiralEnemy : MonoBehaviour
     [SerializeField] float _radius = 1;
 
         Vector3 _circleOffset = Vector3.zero;
+
+    [SerializeField] int _scoreValue = 15;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -102,7 +105,7 @@ public class SpiralEnemy : MonoBehaviour
             if (laser != null && !laser.IsEnemyLaser)
             {
                 laser.DestroyObjectAndParent();
-                GameManager.Instance.AddToScore(10);
+                GameManager.Instance.AddToScore(_scoreValue);
                 EnemyDeathSequence();
             }
         }
@@ -114,5 +117,10 @@ public class SpiralEnemy : MonoBehaviour
         GameObject go = Instantiate(_explosion, transform.position, Quaternion.identity);
         go.transform.localScale = _explosionScale;
         Destroy(this.gameObject);
+    }
+
+    public EnemyMovementType GetEnemyMovementType()
+    {
+        return _enemyMovementType;
     }
 }
