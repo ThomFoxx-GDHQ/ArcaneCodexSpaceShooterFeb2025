@@ -19,6 +19,9 @@ public class SpawnManager : MonoBehaviour
     private int _enemiesInScene;
     private bool _isSpawning = true;
     [SerializeField] private GameObject[] _powerupPrefabs;
+    [SerializeField] private int[] _powerupChances;
+    private int _powerupChanceTotal = 0;
+    [SerializeField] private float[] _powerupPercents;
 
     [SerializeField] private int _waveMultiplier = 5;    
     private int _enemyWaveCount = 5;
@@ -40,6 +43,19 @@ public class SpawnManager : MonoBehaviour
         StartCoroutine(WaveAdvance());
         //StartCoroutine(EnemySpawner());
         StartCoroutine(PowerupSpawner());
+
+        foreach (int chance in _powerupChances) //Add up all Powerup Chances
+        {
+            _powerupChanceTotal += chance;
+        }
+
+        _powerupPercents = new float[_powerupChances.Length];
+
+        for (int i = 0;i<_powerupChances.Length;i++)
+        {
+            _powerupPercents[i]= (float)_powerupChances[i]/_powerupChanceTotal;
+        }
+
     }
 
     /*private void WaveAdvance()
@@ -73,6 +89,7 @@ public class SpawnManager : MonoBehaviour
             if (_enemiesInScene < _maxEnemiesInScene)
             {
                 int randomEnemy = Random.Range(0, _enemyPrefabs.Length);
+                
                 EnemyMovementType type = _enemyPrefabs[randomEnemy].GetComponent<IEnemy>().GetEnemyMovementType();
 
                 float rng;
@@ -113,11 +130,49 @@ public class SpawnManager : MonoBehaviour
             _spawnPos.y = _topBound;
             float randomSpawnPOS = Random.Range(-_leftRightBounds, _leftRightBounds);
             _spawnPos.x = randomSpawnPOS;
-            int randomPowerup = Random.Range(0, _powerupPrefabs.Length);
+            int randomPowerup = PickRandomPowerUp();
 
             Instantiate(_powerupPrefabs[randomPowerup], _spawnPos, Quaternion.identity);
             yield return new WaitForSeconds(1);
         }
+    }
+
+    private int PickRandomPowerUp()
+    {
+        int rng = Random.Range(0, _powerupChanceTotal);
+
+        for (int i = 0; i < _powerupChances.Length; i++)
+        {
+            if (rng < _powerupChances[i])
+                return i;
+            else
+                rng -= _powerupChances[i];
+        }
+        return 0;
+    }
+
+    private int PickRandomPowerupPercentage()
+    {
+        float rng = Random.value;
+        float runningTotal = 0;
+
+        Debug.Log($"Random Number = {rng}%.");
+
+        for (int i = 0; i < _powerupPercents.Length; i++)
+        {            
+            if (rng < _powerupPercents[i] + runningTotal)
+            {
+
+                Debug.Log($"Picked item #{i} : {_powerupPercents[i] + runningTotal}");
+                return i;
+            }
+            else
+            {
+                Debug.Log($"Adding {_powerupPercents[i]} to {runningTotal} = {runningTotal + _powerupPercents[i]}.");
+                runningTotal += _powerupPercents[i];
+            }
+        }
+        return 0;
     }
 
     public void OnEnemyDeath()

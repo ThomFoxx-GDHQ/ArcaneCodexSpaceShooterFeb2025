@@ -32,12 +32,22 @@ public class Enemy : MonoBehaviour, IEnemy
 
     [SerializeField] int _scoreValue = 10;
 
+    [SerializeField, Range(0,1)] float _shieldChance = .5f;
+    bool _shieldActive;
+    [SerializeField] GameObject _shieldVisual;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         _laserContainer = GameObject.Find("LaserContainer").transform;
         _cameraController = Camera.main.GetComponent<CameraController>();
+
+        if (Random.value > _shieldChance)
+        {
+            _shieldVisual.SetActive(true);
+            _shieldActive = true;
+        }
     }
 
     // Update is called once per frame
@@ -73,22 +83,47 @@ public class Enemy : MonoBehaviour, IEnemy
     private void OnTriggerEnter2D(Collider2D other)
     {        
         if (other.CompareTag("Player"))
-        { 
-            other.GetComponentInParent<Player>()?.Damage();
-            _cameraController.StartCameraShake(_shakeIntensity, _shakeTime);
-            EnemyDeathSequence();
-        }
-        if (other.CompareTag("Projectile"))
         {
-            Laser laser = other.GetComponent<Laser>();
-            if (laser != null && !laser.IsEnemyLaser)
+            if (ShieldCheck() == false)
             {
-                laser.DestroyObjectAndParent();
-                GameManager.Instance.AddToScore(_scoreValue);
+                other.GetComponentInParent<Player>()?.Damage();
+                _cameraController.StartCameraShake(_shakeIntensity, _shakeTime);
                 EnemyDeathSequence();
             }
         }
+        if (other.CompareTag("Projectile"))
+        {
+            if (ShieldCheck() == false)
+            {
+                Laser laser = other.GetComponent<Laser>();
+                if (laser != null && !laser.IsEnemyLaser)
+                {
+                    laser.DestroyObjectAndParent();
+                    GameManager.Instance.AddToScore(_scoreValue);
+                    EnemyDeathSequence();
+                }
+            }
+            else
+            {
+                Laser laser = other.GetComponent<Laser>();
+                if (laser != null && !laser.IsEnemyLaser)
+                    laser.DestroyObjectAndParent();
+            }
+        }
     }
+
+    private bool ShieldCheck()
+    {
+        if (!_shieldActive)
+            return false;
+        else
+        {
+            _shieldActive = false;
+            _shieldVisual.SetActive(false);
+            return true;
+        }
+    }
+
 
     private void EnemyDeathSequence()
     {
