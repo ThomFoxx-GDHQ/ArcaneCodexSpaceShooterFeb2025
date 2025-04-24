@@ -1,7 +1,7 @@
 using UnityEngine;
 using ArcaneCodex.Utilities;
 
-public class AggressiveEnemy : MonoBehaviour
+public class AggressiveEnemy : MonoBehaviour, IEnemy
 {
     [SerializeField] EnemyMovementType _enemyMovementType;
     [SerializeField] float _speed = 5f;
@@ -60,11 +60,44 @@ public class AggressiveEnemy : MonoBehaviour
         }
         else
         {
-            //transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _speed * Time.deltaTime);
+            transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _speed * Time.deltaTime);
 
 
-            _model.transform.rotation = Utilities.LookAt2D(_player.transform.position, transform.position);
+            _model.transform.rotation = Utilities2D.LookAt2D(_player.transform.position, transform.position);
 
         }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            other.GetComponentInParent<Player>()?.Damage();
+            _cameraController.StartCameraShake(_shakeIntensity, _shakeTime);
+            EnemyDeathSequence();
+        }
+
+        if (other.CompareTag("Projectile"))
+        {
+            Laser laser = other.GetComponent<Laser>();
+
+            if (laser != null && !laser.IsEnemyLaser)
+                laser.DestroyObjectAndParent();
+            GameManager.Instance.AddToScore(_scoreValue);
+            EnemyDeathSequence();
+        }
+    }
+
+    private void EnemyDeathSequence()
+    {
+        SpawnManager.Instance.OnEnemyDeath();
+        GameObject go = Instantiate(_explosion, transform.position, Quaternion.identity);
+        go.transform.localScale = _explosionScale;
+        Destroy(this.gameObject);
+    }
+
+    public EnemyMovementType GetEnemyMovementType()
+    {
+        return _enemyMovementType;
     }
 }
