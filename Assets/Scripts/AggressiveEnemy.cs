@@ -100,4 +100,9 @@ public class AggressiveEnemy : MonoBehaviour, IEnemy
     {
         return _enemyMovementType;
     }
+
+    public void FireAtPowerup()
+    {
+        // Not Implemented
+    }
 }

@@ -12,9 +12,12 @@ public class Powerup : MonoBehaviour
 
     [SerializeField] AudioClip _clip;
 
+    Player _player;
+
     private void Start()
     {
         //Debug.Break();
+        _player = GameObject.FindGameObjectWithTag("Player")?.GetComponent<Player>();
     }
 
     // Update is called once per frame
@@ -25,7 +28,14 @@ public class Powerup : MonoBehaviour
 
     void CalculateMovement()
     {
-        transform.Translate(Vector3.down * (_speed * Time.deltaTime));
+        if (Input.GetKey(KeyCode.C))
+        {
+            transform.position = Vector3.MoveTowards(transform.position, _player.transform.position, _speed * 2 * Time.deltaTime);
+        }
+        else
+        {
+            transform.Translate(Vector3.down * (_speed * Time.deltaTime));
+        }
 
         if (transform.position.y < _bottomBounds)
         {
@@ -74,6 +84,13 @@ public class Powerup : MonoBehaviour
             }
             AudioSource.PlayClipAtPoint(_clip, transform.position);
             Destroy(this.gameObject);
+        }
+        if (other.CompareTag("Projectile"))
+        {
+            if (other.TryGetComponent<Laser>(out Laser laser) && laser.IsEnemyLaser)
+            {
+                Destroy(this.gameObject);
+            }
         }
     }
 }

@@ -145,7 +145,7 @@ MonoBehaviour:
   _shakeIntensity: 0.2
   _shakeTime: 0.5
   _scoreValue: 10
-  _attackDistance: 2
+  _attackDistance: 5
   _model: {fileID: 5125131643816250927}
 --- !u!61 &3734883951081796106
 BoxCollider2D:

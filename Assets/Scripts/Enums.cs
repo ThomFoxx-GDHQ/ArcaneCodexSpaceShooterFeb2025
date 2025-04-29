@@ -17,3 +17,8 @@ public enum EnemyMovementType
     RightLeft,
     LeftRight
 }
+
+public enum DodgeDirection
+{
+    Left, Right
+}

@@ -123,4 +123,10 @@ public class SpiralEnemy : MonoBehaviour, IEnemy
     {
         return _enemyMovementType;
     }
+
+    public void FireAtPowerup()
+    {
+        FireLaser(_leftLaserPoint.position);
+        FireLaser(_rightLaserPoint.position);
+    }
 }

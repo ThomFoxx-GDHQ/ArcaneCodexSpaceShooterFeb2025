@@ -88,4 +88,9 @@ public class SidewaysEnemy : MonoBehaviour, IEnemy
     {
         return _enemyMovementType;
     }
+
+    public void FireAtPowerup()
+    {
+        // Not Implemented
+    }
 }
