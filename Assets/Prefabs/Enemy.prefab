@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 1380494014616414738}
   - component: {fileID: 5543807458684848178}
   - component: {fileID: 5805935229165646485}
+  - component: {fileID: 44227371728487060}
   m_Layer: 0
   m_Name: FireDetection(Right)
   m_TagString: Untagged
@@ -227,6 +228,20 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &44227371728487060
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2041654321776306468}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 779dca3a33fdf104a9a2d6b4486cd6e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dodgeDirection: -1
+  _enemyParent: {fileID: 3245363830714826075}
 --- !u!1 &2058009565767033331
 GameObject:
   m_ObjectHideFlags: 0
@@ -610,6 +625,7 @@ GameObject:
   - component: {fileID: 4736389084336419069}
   - component: {fileID: 8656744048481383507}
   - component: {fileID: 195758767388126969}
+  - component: {fileID: 3724912306584626254}
   m_Layer: 0
   m_Name: FireDetection(Left)
   m_TagString: Untagged
@@ -705,3 +721,17 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 0
   m_Constraints: 0
+--- !u!114 &3724912306584626254
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5687935132735847201}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 779dca3a33fdf104a9a2d6b4486cd6e8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _dodgeDirection: 1
+  _enemyParent: {fileID: 3245363830714826075}

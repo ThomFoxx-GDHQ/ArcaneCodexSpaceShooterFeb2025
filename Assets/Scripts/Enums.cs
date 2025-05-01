@@ -20,5 +20,6 @@ public enum EnemyMovementType
 
 public enum DodgeDirection
 {
-    Left, Right
+    Left = -1,
+    Right = 1
 }

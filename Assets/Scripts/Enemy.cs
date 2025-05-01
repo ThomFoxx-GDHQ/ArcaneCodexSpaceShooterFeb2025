@@ -1,3 +1,4 @@
+using System.Collections;
 using TMPro.Examples;
 using Unity.VisualScripting;
 using UnityEngine;
@@ -36,6 +37,10 @@ public class Enemy : MonoBehaviour, IEnemy
     bool _shieldActive;
     [SerializeField] GameObject _shieldVisual;
 
+    bool _isDodging = false;
+    float _direction = 1;
+    Coroutine _dodgeCoroutine;
+
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -66,12 +71,23 @@ public class Enemy : MonoBehaviour, IEnemy
     
     private void CalculateMovement()
     {
-        transform.Translate(Vector3.down * (_speed * Time.deltaTime));
+        if (_isDodging)
+        {
+            transform.Translate(Vector2.right * (_direction * _speed * Time.deltaTime));
+        }
+        else
+        {
+            transform.Translate(Vector3.down * (_speed * Time.deltaTime));
+        }
+
         if (transform.position.y <= _bottombounds)
         {
             float randX = Random.Range(_leftBounds, _rightBounds);
             transform.position = new Vector2(randX, _topbounds);
         }
+
+        if (Mathf.Abs(transform.position.x) > _rightBounds)
+            _isDodging = false;
     }
 
     private void FireLaser(Vector3 spawnPOS)
@@ -142,5 +158,23 @@ public class Enemy : MonoBehaviour, IEnemy
     {
         FireLaser(_leftLaserPoint.position);
         FireLaser(_rightLaserPoint.position);
+    }
+
+    public void DodgeFire(DodgeDirection direction)
+    {
+        if (_dodgeCoroutine == null)
+        {
+            _direction = (float)direction;
+            _dodgeCoroutine = StartCoroutine(DodgeTime());
+        }
+    }
+
+    IEnumerator DodgeTime()
+    {
+        _isDodging = true;
+        yield return new WaitForSeconds(1);
+        _isDodging = false;
+        yield return new WaitForSeconds(1);
+        _dodgeCoroutine = null;
     }
 }

@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class EnemyDodge : MonoBehaviour
 {
@@ -12,7 +11,7 @@ public class EnemyDodge : MonoBehaviour
         {
             if (other.TryGetComponent<Laser>(out Laser laser) && !laser.IsEnemyLaser)
             {
-                //Dodge Left or Right
+                _enemyParent.DodgeFire(_dodgeDirection);
             }
         }
     }
