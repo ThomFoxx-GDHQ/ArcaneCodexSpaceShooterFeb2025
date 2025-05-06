@@ -82,9 +82,11 @@ public class AggressiveEnemy : MonoBehaviour, IEnemy
             Laser laser = other.GetComponent<Laser>();
 
             if (laser != null && !laser.IsEnemyLaser)
+            {
                 laser.DestroyObjectAndParent();
-            GameManager.Instance.AddToScore(_scoreValue);
-            EnemyDeathSequence();
+                GameManager.Instance.AddToScore(_scoreValue);
+                EnemyDeathSequence();
+            }
         }
     }
 
@@ -104,5 +106,11 @@ public class AggressiveEnemy : MonoBehaviour, IEnemy
     public void FireAtPowerup()
     {
         // Not Implemented
+    }
+
+    public void Damage()
+    {
+        GameManager.Instance.AddToScore(_scoreValue);
+        EnemyDeathSequence();
     }
 }

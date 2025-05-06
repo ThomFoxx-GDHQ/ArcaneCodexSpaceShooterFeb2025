@@ -11,7 +11,6 @@ GameObject:
   - component: {fileID: 2641214513520380737}
   - component: {fileID: 2649750266754006227}
   - component: {fileID: 2194456905969986855}
-  - component: {fileID: 1065128916308371157}
   m_Layer: 0
   m_Name: Model
   m_TagString: Untagged
@@ -135,33 +134,6 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1.1447239, y: 0.26421294}
   m_EdgeRadius: 0
---- !u!50 &1065128916308371157
-Rigidbody2D:
-  serializedVersion: 5
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 730552100257766180}
-  m_BodyType: 0
-  m_Simulated: 1
-  m_UseFullKinematicContacts: 0
-  m_UseAutoMass: 0
-  m_Mass: 1
-  m_LinearDamping: 0
-  m_AngularDamping: 0.05
-  m_GravityScale: 0
-  m_Material: {fileID: 0}
-  m_IncludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_ExcludeLayers:
-    serializedVersion: 2
-    m_Bits: 0
-  m_Interpolate: 0
-  m_SleepingMode: 1
-  m_CollisionDetection: 0
-  m_Constraints: 0
 --- !u!1 &5973339379693212687
 GameObject:
   m_ObjectHideFlags: 0
@@ -172,6 +144,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3613552714765348576}
   - component: {fileID: 8806759638351445410}
+  - component: {fileID: 3347107099761598175}
   m_Layer: 0
   m_Name: HomingMissile
   m_TagString: Untagged
@@ -210,3 +183,34 @@ MonoBehaviour:
   _speed: 6
   _engageDelay: 1
   _model: {fileID: 2641214513520380737}
+  _explosionPrefab: {fileID: 3436707506184480900, guid: 8bc5180bd45ed724ab939b4e501667f0, type: 3}
+  _hitScale: {x: 0.25, y: 0.25}
+  _blastScale: {x: 1, y: 1}
+  _denotationTimer: 5
+--- !u!50 &3347107099761598175
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5973339379693212687}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

@@ -1,3 +1,4 @@
+using TMPro.Examples;
 using UnityEngine;
 
 public class MineLayingEnemy : MonoBehaviour, IEnemy
@@ -17,6 +18,12 @@ public class MineLayingEnemy : MonoBehaviour, IEnemy
 
     [SerializeField] GameObject _explosionPrefab;
     [SerializeField] Vector3 _explosionScale;
+    [SerializeField] CameraController _cameraController;
+    [Tooltip("Controls the Intensity of the Camera Shake when hitting Player")]
+    [SerializeField, Range(0, 1)] float _shakeIntensity = .5f;
+    [SerializeField, Range(0, 1)] float _shakeTime = 1f;
+
+    [SerializeField] int _scoreValue = 10;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -55,5 +62,44 @@ public class MineLayingEnemy : MonoBehaviour, IEnemy
     public void FireAtPowerup()
     {
         // Not Implemented
+    }
+
+    public void Damage()
+    {
+        GameManager.Instance.AddToScore(_scoreValue);
+        EnemyDeathSequence();
+    }
+
+    private void EnemyDeathSequence()
+    {
+        SpawnManager.Instance.OnEnemyDeath();
+        GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+        go.transform.localScale = _explosionScale;
+        Destroy(this.gameObject);
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Player"))
+        {
+            other.GetComponentInParent<Player>()?.Damage();
+            _cameraController.StartCameraShake(_shakeIntensity, _shakeTime);
+            EnemyDeathSequence();
+        }
+        if (other.CompareTag("Projectile"))
+        {
+            Laser laser = other.GetComponent<Laser>();
+            if (laser != null && !laser.IsEnemyLaser)
+            {
+                laser.DestroyObjectAndParent();
+                GameManager.Instance.AddToScore(_scoreValue);
+                EnemyDeathSequence();
+            }
+            else
+            {               
+                if (laser != null && !laser.IsEnemyLaser)
+                    laser.DestroyObjectAndParent();
+            }
+        }
     }
 }

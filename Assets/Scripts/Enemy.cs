@@ -140,7 +140,6 @@ public class Enemy : MonoBehaviour, IEnemy
         }
     }
 
-
     private void EnemyDeathSequence()
     {
         SpawnManager.Instance.OnEnemyDeath();
@@ -176,5 +175,14 @@ public class Enemy : MonoBehaviour, IEnemy
         _isDodging = false;
         yield return new WaitForSeconds(1);
         _dodgeCoroutine = null;
+    }
+
+    public void Damage()
+    {
+        if (ShieldCheck() == false)
+        {
+            GameManager.Instance.AddToScore(_scoreValue);
+            EnemyDeathSequence();
+        }
     }
 }

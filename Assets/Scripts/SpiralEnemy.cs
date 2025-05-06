@@ -25,7 +25,7 @@ public class SpiralEnemy : MonoBehaviour, IEnemy
     [Space(10)]
     [SerializeField] GameObject _explosion;
     [SerializeField] Vector3 _explosionScale;
-    [SerializeField] CameraController _cameraController; 
+    [SerializeField] CameraController _cameraController;
     [Tooltip("Controls the Intensity of the Camera Shake when hitting Player")]
     [SerializeField, Range(0, 1)] float _shakeIntensity = .5f;
     [SerializeField, Range(0, 1)] float _shakeTime = 1f;
@@ -36,7 +36,7 @@ public class SpiralEnemy : MonoBehaviour, IEnemy
     [SerializeField] float _timeStep = 5;
     [SerializeField] float _radius = 1;
 
-        Vector3 _circleOffset = Vector3.zero;
+    Vector3 _circleOffset = Vector3.zero;
 
     [SerializeField] int _scoreValue = 15;
 
@@ -69,11 +69,11 @@ public class SpiralEnemy : MonoBehaviour, IEnemy
     }
 
     private void CalculateMovement()
-    {    
+    {
         _travelLinePosition += Vector3.down * (_speed * Time.deltaTime);
 
         _circleOffset.x = Mathf.Cos(_shipTime * _timeStep) * _radius;
-        _circleOffset.y = Mathf.Sin(_shipTime * _timeStep) * _radius;        
+        _circleOffset.y = Mathf.Sin(_shipTime * _timeStep) * _radius;
 
         transform.position = _travelLinePosition + _circleOffset;
 
@@ -92,9 +92,9 @@ public class SpiralEnemy : MonoBehaviour, IEnemy
     }
 
     private void OnTriggerEnter2D(Collider2D other)
-    {        
+    {
         if (other.CompareTag("Player"))
-        { 
+        {
             other.GetComponentInParent<Player>()?.Damage();
             _cameraController.StartCameraShake(_shakeIntensity, _shakeTime);
             EnemyDeathSequence();
@@ -128,5 +128,11 @@ public class SpiralEnemy : MonoBehaviour, IEnemy
     {
         FireLaser(_leftLaserPoint.position);
         FireLaser(_rightLaserPoint.position);
+    }
+
+    public void Damage()
+    {
+        GameManager.Instance.AddToScore(_scoreValue);
+        EnemyDeathSequence();
     }
 }

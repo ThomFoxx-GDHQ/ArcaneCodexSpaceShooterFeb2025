@@ -78,8 +78,8 @@ public class SidewaysEnemy : MonoBehaviour, IEnemy
 
     private void EnemyDeathSequence()
     {
-       SpawnManager.Instance.OnEnemyDeath();
-       GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
+        SpawnManager.Instance.OnEnemyDeath();
+        GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         go.transform.localScale = _explosionScale;
         Destroy(this.gameObject);
     }
@@ -92,5 +92,11 @@ public class SidewaysEnemy : MonoBehaviour, IEnemy
     public void FireAtPowerup()
     {
         // Not Implemented
+    }
+
+    public void Damage()
+    {
+        GameManager.Instance.AddToScore(_scoreValue);
+        EnemyDeathSequence();
     }
 }
