@@ -186,7 +186,8 @@ MonoBehaviour:
   _explosionPrefab: {fileID: 3436707506184480900, guid: 8bc5180bd45ed724ab939b4e501667f0, type: 3}
   _hitScale: {x: 0.25, y: 0.25}
   _blastScale: {x: 1, y: 1}
-  _denotationTimer: 5
+  _blastDistance: 5
+  _detonationTimer: 5
 --- !u!50 &3347107099761598175
 Rigidbody2D:
   serializedVersion: 5

@@ -64,7 +64,12 @@ public class AggressiveEnemy : MonoBehaviour, IEnemy
 
 
             _model.transform.rotation = Utilities2D.LookAt2D(_player.transform.position, transform.position);
+        }
 
+        if (transform.position.y < _bottombounds)
+        {
+            float rndX = Random.Range(_leftBounds, _rightBounds);
+            transform.position = new Vector3(rndX, _topbounds, 0);
         }
     }
 

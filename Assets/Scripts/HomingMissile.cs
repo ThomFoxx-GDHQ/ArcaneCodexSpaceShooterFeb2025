@@ -1,7 +1,6 @@
 using ArcaneCodex.Utilities;
-using TMPro;
+using UnityEditor;
 using UnityEngine;
-using static UnityEditor.Experimental.GraphView.GraphView;
 
 public class HomingMissile : MonoBehaviour
 {
@@ -17,11 +16,14 @@ public class HomingMissile : MonoBehaviour
     [SerializeField] GameObject _explosionPrefab;
     [SerializeField] Vector2 _hitScale;
     [SerializeField] Vector2 _blastScale;
+    [SerializeField] float _blastDistance;
 
     Vector3 _direction = Vector3.up;
 
     [SerializeField] float _detonationTimer = 5f;
     bool _isDetonating = false;
+
+    Collider2D[] _blastedObjects;
 
     private void Start()
     {
@@ -41,7 +43,7 @@ public class HomingMissile : MonoBehaviour
         if (_detonationTimer <= 0 && _isDetonating == false)
         {
             _isDetonating = true;
-            Denotate();
+            Detonate();
         }
 
         if (_startTime + _engageDelay > Time.time)
@@ -57,7 +59,7 @@ public class HomingMissile : MonoBehaviour
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.gameObject == _owner) return;
-        if (other.gameObject == _target || other.transform.parent.gameObject == _target)
+        if (other.gameObject == _target || other.transform.parent?.gameObject == _target)
         {
             if (other.transform.parent.TryGetComponent<Player>(out Player player))
             {
@@ -77,13 +79,31 @@ public class HomingMissile : MonoBehaviour
 
     }
 
-    private void Denotate()
+    private void Detonate()
     {
         //Spawn the Large Explosion
         GameObject go = Instantiate(_explosionPrefab, transform.position, Quaternion.identity);
         go.transform.localScale = _blastScale;
+
         //Get a list of all objects in range
+        _blastedObjects = Physics2D.OverlapCircleAll(transform.position, _blastDistance);
+
         //do Damage to all objects that can take damage
+        foreach (Collider2D obj in _blastedObjects)
+        {
+            //Debug.Log(obj.name, this.gameObject);
+            if (obj.TryGetComponent<IEnemy>(out IEnemy enemy))
+                enemy.Damage();
+            else if (obj.TryGetComponent<IEnemy>(out IEnemy enemyAlso))
+                enemyAlso.Damage();
+            else if (obj.TryGetComponent<Powerup>(out Powerup powerup))
+                Destroy(powerup.gameObject);
+            else if (obj.TryGetComponent<MineControl>(out MineControl mine))
+                Destroy(mine.gameObject);
+            else if (obj.CompareTag("Player"))            
+                obj.transform.parent.GetComponent<Player>()?.Damage();            
+        }
+
         Destroy(this.gameObject);
     }
 }
