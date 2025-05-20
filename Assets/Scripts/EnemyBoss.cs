@@ -1,6 +1,8 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public class EnemyBoss : MonoBehaviour, IEnemy
 {
@@ -18,7 +20,8 @@ public class EnemyBoss : MonoBehaviour, IEnemy
     {
         Missile,
         Tractor,
-        Bullet
+        Bullet,
+        LaserBarrage
     }
 
     private BossState _currentState = BossState.Intro;
@@ -32,6 +35,7 @@ public class EnemyBoss : MonoBehaviour, IEnemy
 
     [SerializeField] private List<Transform> _missileFireLocations = new List<Transform>();
     [SerializeField] private GameObject _missilePrefab;
+    [SerializeField] private LaserBarrageManager _laserBarrage;
 
     void Start()
     {
@@ -93,12 +97,16 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         if (_isAttacking) return;
 
         // Pick and execute a random attack (currently only Missile implemented)
-        _currentAttack = AttackStates.Missile;
+        int varlength = Enum.GetValues(typeof(AttackStates)).Length;
+        _currentAttack = (AttackStates)Random.Range(0, varlength);
 
         switch (_currentAttack)
         {
             case AttackStates.Missile:
                 StartCoroutine(MissileAttackRoutine());
+                break;
+            case AttackStates.LaserBarrage:
+                _laserBarrage.StartBarrage();
                 break;
             default:
                 break;
