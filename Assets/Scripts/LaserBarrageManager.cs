@@ -1,11 +1,13 @@
 using System.Collections;
 using UnityEngine;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 
 
 public class LaserBarrageManager : MonoBehaviour
 {
     private Vector3 _orignPosition;
+    [SerializeField] private EnemyBoss _enemyBoss;
     [SerializeField] private Transform[] _firePoints;
     [SerializeField] private GameObject _laserPrefab;
     [SerializeField] private Transform _laserContainer;
@@ -43,7 +45,7 @@ public class LaserBarrageManager : MonoBehaviour
     }
 
     IEnumerator LaserBarrageRoutine()
-    {
+    {        
         timer = Time.time + _barrageTime;
         while (_active && timer > Time.time)
         {
@@ -56,21 +58,78 @@ public class LaserBarrageManager : MonoBehaviour
         }
         _active = false;
         transform.position = _orignPosition;
+        _enemyBoss.IsAttackState(false);
+        _enemyBoss.StartStateDelay();
     }
     
     [ContextMenu("Start Barrage Test")]
     public void StartBarrage()
     {
+        _enemyBoss.IsAttackState(true);
         _active = true;
 
         _gapPoints.Clear();
         //Random Selection of Gap
-        int gapIndex = Random.Range(1, _firePoints.Length - 1);
+        int gapIndex = Random.Range(2, _firePoints.Length - 2);
 
         _gapPoints.Add(_firePoints[gapIndex - 1]);
         _gapPoints.Add(_firePoints[gapIndex]);
         _gapPoints.Add(_firePoints[gapIndex + 1]);
 
         StartCoroutine(LaserBarrageRoutine());
+    }
+
+    public void StartLaserWall()
+    {
+        _enemyBoss.IsAttackState(true);
+
+        
+
+        StartCoroutine(LaserWallRoutine());
+
+    }
+
+    private void DetermineLaserWallPoints()
+    {
+        _gapPoints.Clear();
+
+        int gapIndex = Random.Range(3, _firePoints.Length - 3);
+
+        _gapPoints.Add(_firePoints[gapIndex - 2]);
+        _gapPoints.Add(_firePoints[gapIndex - 1]);
+        _gapPoints.Add(_firePoints[gapIndex]);
+        _gapPoints.Add(_firePoints[gapIndex + 1]);
+        _gapPoints.Add(_firePoints[gapIndex + 2]);
+    }
+
+    IEnumerator LaserWallRoutine()
+    {
+        for (int i = 0; i < 3; i++)
+        {
+            DetermineLaserWallPoints();
+            foreach(Transform t in _gapPoints)
+            {
+                t.GetChild(0).gameObject.SetActive(true);
+            }
+            yield return new WaitForSeconds(2.1f);
+            foreach (Transform t in _gapPoints)
+            {
+                t.GetChild(0).gameObject.SetActive(false);
+            }
+
+            timer = Time.time + 3;
+            while (timer > Time.time)
+            {
+                yield return new WaitForSeconds(.25f);
+                foreach (Transform t in _gapPoints)
+                {
+                    FireLaser(t.position);
+                }
+            }
+            yield return new WaitForSeconds(1);
+        }
+
+        _enemyBoss.IsAttackState(false);
+        _enemyBoss.StartStateDelay();
     }
 }

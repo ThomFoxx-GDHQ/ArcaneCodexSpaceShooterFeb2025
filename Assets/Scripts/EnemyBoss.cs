@@ -21,7 +21,8 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         Missile,
         Tractor,
         Bullet,
-        LaserBarrage
+        LaserBarrage,
+        LaaserWall
     }
 
     private BossState _currentState = BossState.Intro;
@@ -47,6 +48,9 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         // State machine controlling the boss's current behavior
         switch (_currentState)
         {
+            case BossState.None:
+                _randomTime = 0;
+                break;
             case BossState.Intro:
                 BossEntry();
                 break;
@@ -99,6 +103,7 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         // Pick and execute a random attack (currently only Missile implemented)
         int varlength = Enum.GetValues(typeof(AttackStates)).Length;
         _currentAttack = (AttackStates)Random.Range(0, varlength);
+        Debug.Log($"{_currentAttack.ToString()} is the next attack");
 
         switch (_currentAttack)
         {
@@ -107,6 +112,9 @@ public class EnemyBoss : MonoBehaviour, IEnemy
                 break;
             case AttackStates.LaserBarrage:
                 _laserBarrage.StartBarrage();
+                break;
+            case AttackStates.LaaserWall:
+                _laserBarrage.StartLaserWall();
                 break;
             default:
                 break;
@@ -143,7 +151,7 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         yield return null;
         _isAttacking = false;
 
-        _randomTime = 0;
+        //_randomTime = 0;
         StartCoroutine(StateChangeDelay(5, BossState.Idle));
     }
 
@@ -153,6 +161,16 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         _currentState = BossState.None;
         yield return new WaitForSeconds(delay);
         _currentState = state;
+    }
+
+    public void IsAttackState(bool isAttacking)
+    {
+        _isAttacking = isAttacking;
+    }
+
+    public void StartStateDelay()
+    {
+        StartCoroutine(StateChangeDelay(5, BossState.Idle));
     }
 
     // --- IEnemy Interface Implementation ---
