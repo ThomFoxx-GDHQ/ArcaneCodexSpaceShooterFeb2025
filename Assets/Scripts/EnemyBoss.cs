@@ -22,7 +22,9 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         Tractor,
         Bullet,
         LaserBarrage,
-        LaaserWall
+        LaserWall,
+        Spinner,
+        BurstSpinner
     }
 
     private BossState _currentState = BossState.Intro;
@@ -37,6 +39,7 @@ public class EnemyBoss : MonoBehaviour, IEnemy
     [SerializeField] private List<Transform> _missileFireLocations = new List<Transform>();
     [SerializeField] private GameObject _missilePrefab;
     [SerializeField] private LaserBarrageManager _laserBarrage;
+    [SerializeField] private GameObject _spinnerPrefab;
 
     void Start()
     {
@@ -113,12 +116,29 @@ public class EnemyBoss : MonoBehaviour, IEnemy
             case AttackStates.LaserBarrage:
                 _laserBarrage.StartBarrage();
                 break;
-            case AttackStates.LaaserWall:
+            case AttackStates.LaserWall:
                 _laserBarrage.StartLaserWall();
+                break;
+            case AttackStates.Spinner:
+                StartCoroutine(SpinnerAttack(false));
+                break;
+            case AttackStates.BurstSpinner:
+                StartCoroutine(SpinnerAttack(true));
                 break;
             default:
                 break;
         }
+    }
+
+    IEnumerator SpinnerAttack(bool isBursting)
+    {
+        _isAttacking = true;
+
+        GameObject go = Instantiate(_spinnerPrefab, transform.position, Quaternion.identity);
+        go.GetComponent<SpinnerBehaviour>()?.SetBurstFire(isBursting);
+        yield return new WaitForSeconds(5);
+        _isAttacking = false;
+        StartCoroutine(StateChangeDelay(5, BossState.Idle));
     }
 
     IEnumerator MissileAttackRoutine()

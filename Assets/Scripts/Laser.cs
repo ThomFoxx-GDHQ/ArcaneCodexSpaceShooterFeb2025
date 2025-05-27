@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 public class Laser : MonoBehaviour
@@ -22,16 +23,18 @@ public class Laser : MonoBehaviour
     private void MoveUp()
     {
         transform.Translate(_speed * _speedMultiplier * Time.deltaTime * Vector3.up);
-        if (transform.position.y > 7)
-        {
-            DestroyObjectAndParent();
-        }
+        BoundaryCheck();
     }
 
     private void MoveDown()
     {
         transform.Translate(_speed * _speedMultiplier * Time.deltaTime * Vector3.down);
-        if (transform.position.y < -7)
+        BoundaryCheck();
+    }
+
+    private void BoundaryCheck()
+    {
+        if (Mathf.Abs(transform.position.y) > 7 || Mathf.Abs(transform.position.x)>15)
         {
             DestroyObjectAndParent();
         }
