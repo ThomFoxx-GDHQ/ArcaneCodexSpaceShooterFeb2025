@@ -81,6 +81,7 @@ public class Player : MonoBehaviour
     [SerializeField] private float _overheatLimiter = 50f;
 
     private bool _wasHit = false;
+    private bool _isCaughtByTractor = false;
 
 #endregion
 
@@ -196,6 +197,8 @@ public class Player : MonoBehaviour
 
     private void CalculateMovement()
     {
+        if (_isCaughtByTractor) return;
+
         //Get Inputs
         _horizontalInput = Input.GetAxis("Horizontal");
         _verticalInput = Input.GetAxis("Vertical");
@@ -457,6 +460,11 @@ public class Player : MonoBehaviour
     {
         yield return new WaitForSeconds(5);
         _slowLasers = false;
+    }
+
+    public void CaughtByTractor(bool state)
+    {
+        _isCaughtByTractor = state;
     }
 
     private void OnTriggerEnter2D(Collider2D other)

@@ -15,12 +15,22 @@ public class SpinnerBehaviour : MonoBehaviour
     GameObject _laser;
     Transform _laserContainer;
     int _laserIndex = 0;
+    int _spinDirection = 1;
 
     private void Start()
     {
         _firePoints = _model.GetComponentsInChildren<Transform>().ToList();
         _firePoints.Remove(_model);
         _laserContainer = GameObject.Find("LaserContainer").transform;
+
+        Transform player = GameObject.FindGameObjectWithTag("Player").transform;
+        if (player != null)
+        {
+            if (player.position.x < transform.position.x)
+                _spinDirection = -1;
+            else _spinDirection = 1;
+        }
+
     }
 
     private void Update()
@@ -33,7 +43,7 @@ public class SpinnerBehaviour : MonoBehaviour
     private void CalculateMovement()
     {
         transform.Translate(Vector3.down * (_fallSpeed * Time.deltaTime), Space.World);
-        _model.transform.Rotate(Vector3.forward, _spinSpeed * Time.deltaTime);
+        _model.transform.Rotate(Vector3.forward, _spinDirection * _spinSpeed * Time.deltaTime);
 
         if (transform.position.y < -10)
             Destroy(this.gameObject);
@@ -65,5 +75,17 @@ public class SpinnerBehaviour : MonoBehaviour
     public void SetBurstFire(bool isBurstFireOn)
     {
         _isBurstFiring = isBurstFireOn;
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Projectile"))
+        {
+            Laser laser = other.GetComponent<Laser>();
+            if (!laser.IsEnemyLaser)
+            {
+                Destroy(this.gameObject);
+            }
+        }
     }
 }

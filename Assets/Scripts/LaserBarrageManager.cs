@@ -42,6 +42,7 @@ public class LaserBarrageManager : MonoBehaviour
         _laser = Instantiate(_laserPrefab, spawnPOS, Quaternion.identity, _laserContainer).GetComponent<Laser>();
         _laser.AssignLaser(true, true);
         _laser.SetSlowLaser();
+        Debug.Log("Laser Fired",_laser.gameObject);
     }
 
     IEnumerator LaserBarrageRoutine()

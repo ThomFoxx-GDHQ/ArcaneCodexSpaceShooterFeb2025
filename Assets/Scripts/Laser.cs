@@ -34,7 +34,7 @@ public class Laser : MonoBehaviour
 
     private void BoundaryCheck()
     {
-        if (Mathf.Abs(transform.position.y) > 7 || Mathf.Abs(transform.position.x)>15)
+        if (Mathf.Abs(transform.position.y) > 12 || Mathf.Abs(transform.position.x)>15)
         {
             DestroyObjectAndParent();
         }

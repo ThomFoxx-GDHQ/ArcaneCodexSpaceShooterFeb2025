@@ -40,10 +40,14 @@ public class EnemyBoss : MonoBehaviour, IEnemy
     [SerializeField] private GameObject _missilePrefab;
     [SerializeField] private LaserBarrageManager _laserBarrage;
     [SerializeField] private GameObject _spinnerPrefab;
+    [SerializeField] private LineRenderer _tractorBeamRender;
+
+    Transform _player;
 
     void Start()
     {
         // Initialization logic (currently unused)
+        _player = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
     void Update()
@@ -110,21 +114,24 @@ public class EnemyBoss : MonoBehaviour, IEnemy
 
         switch (_currentAttack)
         {
-            case AttackStates.Missile:
-                StartCoroutine(MissileAttackRoutine());
-                break;
+            //case AttackStates.Missile:
+            //    StartCoroutine(MissileAttackRoutine());
+            //    break;
             case AttackStates.LaserBarrage:
                 _laserBarrage.StartBarrage();
                 break;
             case AttackStates.LaserWall:
                 _laserBarrage.StartLaserWall();
                 break;
-            case AttackStates.Spinner:
-                StartCoroutine(SpinnerAttack(false));
-                break;
-            case AttackStates.BurstSpinner:
-                StartCoroutine(SpinnerAttack(true));
-                break;
+            //case AttackStates.Spinner:
+            //    StartCoroutine(SpinnerAttack(false));
+            //    break;
+            //case AttackStates.BurstSpinner:
+            //    StartCoroutine(SpinnerAttack(true));
+            //    break;
+            //case AttackStates.Tractor:
+            //    StartCoroutine(TractorBeamRoutine());
+            //    break;
             default:
                 break;
         }
@@ -172,6 +179,26 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         _isAttacking = false;
 
         //_randomTime = 0;
+        StartCoroutine(StateChangeDelay(5, BossState.Idle));
+    }
+
+    IEnumerator TractorBeamRoutine()
+    {
+        _isAttacking = true;
+        _player.GetComponent<Player>()?.CaughtByTractor(true);
+
+        _tractorBeamRender.positionCount = 2;
+        _tractorBeamRender.SetPosition(0, transform.position);
+        _tractorBeamRender.SetPosition(1, _player.position);
+
+        yield return new WaitForSeconds(5);
+
+        _tractorBeamRender.positionCount = 0;
+
+        _player.GetComponent<Player>()?.CaughtByTractor(false);
+
+        yield return null;
+        _isAttacking = false;
         StartCoroutine(StateChangeDelay(5, BossState.Idle));
     }
 
