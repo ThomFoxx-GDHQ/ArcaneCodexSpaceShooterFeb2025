@@ -42,7 +42,7 @@ public class LaserBarrageManager : MonoBehaviour
         _laser = Instantiate(_laserPrefab, spawnPOS, Quaternion.identity, _laserContainer).GetComponent<Laser>();
         _laser.AssignLaser(true, true);
         _laser.SetSlowLaser();
-        Debug.Log("Laser Fired",_laser.gameObject);
+        //Debug.Log("Laser Fired",_laser.gameObject);
     }
 
     IEnumerator LaserBarrageRoutine()
@@ -80,14 +80,11 @@ public class LaserBarrageManager : MonoBehaviour
         StartCoroutine(LaserBarrageRoutine());
     }
 
-    public void StartLaserWall()
+    public void StartLaserWall(int numberOfAttacks)
     {
         _enemyBoss.IsAttackState(true);
 
-        
-
-        StartCoroutine(LaserWallRoutine());
-
+        StartCoroutine(LaserWallRoutine(numberOfAttacks));
     }
 
     private void DetermineLaserWallPoints()
@@ -103,9 +100,9 @@ public class LaserBarrageManager : MonoBehaviour
         _gapPoints.Add(_firePoints[gapIndex + 2]);
     }
 
-    IEnumerator LaserWallRoutine()
+    IEnumerator LaserWallRoutine(int numberOfAttacks)
     {
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < numberOfAttacks; i++)
         {
             DetermineLaserWallPoints();
             foreach(Transform t in _gapPoints)

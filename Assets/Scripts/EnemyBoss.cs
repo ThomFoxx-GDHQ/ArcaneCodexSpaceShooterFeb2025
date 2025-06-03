@@ -27,6 +27,9 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         BurstSpinner
     }
 
+    private int _currentHealth = 0;
+    [SerializeField] private int _maxHealth = 100;
+
     private BossState _currentState = BossState.Intro;
     private AttackStates _currentAttack;
 
@@ -42,16 +45,27 @@ public class EnemyBoss : MonoBehaviour, IEnemy
     [SerializeField] private GameObject _spinnerPrefab;
     [SerializeField] private LineRenderer _tractorBeamRender;
 
+    [SerializeField] private Color _damageTint = Color.red;
+    private bool _wasDamageThisFrame = false;
+    private Coroutine _coroutine;
+    [SerializeField] private SpriteRenderer _modelRenderer;
+    private Coroutine _damagedRoutine;
+
     Transform _player;
 
     void Start()
     {
         // Initialization logic (currently unused)
         _player = GameObject.FindGameObjectWithTag("Player").transform;
+        _currentHealth = _maxHealth;
+        UIManager.Instance.ActivateBossBar(true);
+        UIManager.Instance.UpdateBossHealth((float)_currentHealth/(float)_maxHealth);
     }
 
     void Update()
     {
+       
+
         // State machine controlling the boss's current behavior
         switch (_currentState)
         {
@@ -114,24 +128,24 @@ public class EnemyBoss : MonoBehaviour, IEnemy
 
         switch (_currentAttack)
         {
-            //case AttackStates.Missile:
-            //    StartCoroutine(MissileAttackRoutine());
-            //    break;
+            case AttackStates.Missile:
+                StartCoroutine(MissileAttackRoutine());
+                break;
             case AttackStates.LaserBarrage:
                 _laserBarrage.StartBarrage();
                 break;
             case AttackStates.LaserWall:
-                _laserBarrage.StartLaserWall();
+                _laserBarrage.StartLaserWall(3);
                 break;
-            //case AttackStates.Spinner:
-            //    StartCoroutine(SpinnerAttack(false));
-            //    break;
-            //case AttackStates.BurstSpinner:
-            //    StartCoroutine(SpinnerAttack(true));
-            //    break;
-            //case AttackStates.Tractor:
-            //    StartCoroutine(TractorBeamRoutine());
-            //    break;
+            case AttackStates.Spinner:
+                StartCoroutine(SpinnerAttack(false));
+                break;
+            case AttackStates.BurstSpinner:
+                StartCoroutine(SpinnerAttack(true));
+                break;
+            case AttackStates.Tractor:
+                StartCoroutine(TractorBeamRoutine());
+                break;
             default:
                 break;
         }
@@ -190,6 +204,7 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         _tractorBeamRender.positionCount = 2;
         _tractorBeamRender.SetPosition(0, transform.position);
         _tractorBeamRender.SetPosition(1, _player.position);
+        _laserBarrage.StartLaserWall(1);
 
         yield return new WaitForSeconds(5);
 
@@ -208,6 +223,7 @@ public class EnemyBoss : MonoBehaviour, IEnemy
         _currentState = BossState.None;
         yield return new WaitForSeconds(delay);
         _currentState = state;
+        _coroutine = null;
     }
 
     public void IsAttackState(bool isAttacking)
@@ -217,15 +233,49 @@ public class EnemyBoss : MonoBehaviour, IEnemy
 
     public void StartStateDelay()
     {
-        StartCoroutine(StateChangeDelay(5, BossState.Idle));
+        if (_coroutine == null)
+            StartCoroutine(StateChangeDelay(5, BossState.Idle));
     }
 
     // --- IEnemy Interface Implementation ---
 
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (_wasDamageThisFrame) return;
+
+        if (other.CompareTag("Projectile"))
+        {
+            Laser laser = other.GetComponent<Laser>();
+            if (laser != null && laser.IsEnemyLaser == false)
+            {
+                Damage();
+            }
+        }
+             
+    }
+
     public void Damage()
     {
-        // To be implemented
-        throw new System.NotImplementedException();
+        _currentHealth--;
+        UIManager.Instance.UpdateBossHealth((float)_currentHealth / (float)_maxHealth);
+        _modelRenderer.material.color = _damageTint;
+        _wasDamageThisFrame = true;
+        if (_damagedRoutine == null)
+            _damagedRoutine = StartCoroutine(DamageReset());
+
+        if (_currentHealth < 1)
+        {
+            UIManager.Instance.OnGameOver();
+            Destroy(this.gameObject);
+        }
+    }
+
+    IEnumerator DamageReset()
+    {
+        yield return new WaitForSeconds(.1f);
+        _wasDamageThisFrame = false;
+        _modelRenderer.material.color = Color.white;
+        _damagedRoutine = null;
     }
 
     public void FireAtPowerup()

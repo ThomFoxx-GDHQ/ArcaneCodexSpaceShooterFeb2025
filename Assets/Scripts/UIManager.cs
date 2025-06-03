@@ -21,6 +21,8 @@ public class UIManager : MonoBehaviour
     [SerializeField] Sprite[] _shieldMeterSprites;
     [SerializeField] TMP_Text _ammoText;
     [SerializeField] TMP_Text _waveText;
+    [SerializeField] GameObject _bossBar;
+    [SerializeField] Image _bossHealthBar;
 
     private void Awake()
     {
@@ -103,5 +105,17 @@ public class UIManager : MonoBehaviour
     {
         _waveText.gameObject.SetActive(state);
         _waveText.text = $"Wave {waveCount}";
+    }
+
+    public void ActivateBossBar(bool state)
+    {
+        _bossBar.SetActive(state);
+    }
+
+    public void UpdateBossHealth(float health)
+    {
+        if (health < 0 || health > 1) return;
+        
+        _bossHealthBar.fillAmount = health;
     }
 }

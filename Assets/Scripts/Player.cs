@@ -83,6 +83,9 @@ public class Player : MonoBehaviour
     private bool _wasHit = false;
     private bool _isCaughtByTractor = false;
 
+    [Header("For Testing")]
+    [SerializeField] bool _isImortal = false;
+
 #endregion
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -297,10 +300,14 @@ public class Player : MonoBehaviour
             return;
         }
 
+#if UNITY_EDITOR
+        if (_isImortal) return;
+#endif
+
         _health--;
         UIManager.Instance.UpdateLives(_health);
         _damageVisuals?.ApplyVisualDamage(_health);
-       
+
 
         if (_health < 1)
         {
