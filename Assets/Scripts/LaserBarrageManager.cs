@@ -66,7 +66,7 @@ public class LaserBarrageManager : MonoBehaviour
     [ContextMenu("Start Barrage Test")]
     public void StartBarrage()
     {
-        _enemyBoss.IsAttackState(true);
+        _enemyBoss?.IsAttackState(true);
         _active = true;
 
         _gapPoints.Clear();
@@ -82,7 +82,7 @@ public class LaserBarrageManager : MonoBehaviour
 
     public void StartLaserWall(int numberOfAttacks)
     {
-        _enemyBoss.IsAttackState(true);
+        _enemyBoss?.IsAttackState(true);
 
         StartCoroutine(LaserWallRoutine(numberOfAttacks));
     }
@@ -127,7 +127,12 @@ public class LaserBarrageManager : MonoBehaviour
             yield return new WaitForSeconds(1);
         }
 
-        _enemyBoss.IsAttackState(false);
-        _enemyBoss.StartStateDelay();
+        _enemyBoss?.IsAttackState(false);
+        _enemyBoss?.StartStateDelay();
+    }
+
+    public void AssignBoss(EnemyBoss boss)
+    {
+        _enemyBoss = boss;
     }
 }

@@ -8,7 +8,7 @@ public class SpawnManager : MonoBehaviour
     public static SpawnManager Instance
     { get { return _instance; } }
 
-    [SerializeField] private GameObject[] _enemyPrefabs;
+    [SerializeField] private GameObject[] _enemyPrefabs;    
     [SerializeField] private float _leftRightBounds = 9f;
     [SerializeField] private float _topBound = 7;
     private Vector3 _spawnPos = Vector3.zero;
@@ -18,6 +18,7 @@ public class SpawnManager : MonoBehaviour
     [SerializeField] private int _maxEnemiesInScene;
     private int _enemiesInScene;
     private bool _isSpawning = true;
+    private bool _isPowerupSpawning = true;
     [SerializeField] private GameObject[] _powerupPrefabs;
     [SerializeField] private int[] _powerupChances;
     private int _powerupChanceTotal = 0;
@@ -27,7 +28,10 @@ public class SpawnManager : MonoBehaviour
     private int _enemyWaveCount = 5;
     private int _spawnedEnemyCount = 0;
 
-    [SerializeField] private int _wave = 0; 
+    [SerializeField] private int _wave = 0;
+
+    [SerializeField] private GameObject _bossPrefab;
+    [SerializeField] private float _bossSpawnPOS;
 
     private void Awake()
     {
@@ -81,51 +85,60 @@ public class SpawnManager : MonoBehaviour
     IEnumerator EnemySpawner()
     {
         _spawnedEnemyCount = 0;
-        while (_isSpawning && _spawnedEnemyCount < _enemyWaveCount)
-        {
+        int waveSegement = _wave % 5;
+        if (waveSegement == 0)
+        { 
+            Instantiate(_bossPrefab, new Vector3(0,_bossSpawnPOS,0), Quaternion.identity, _enemyContainer);
+            _isSpawning = false;
             yield return _enemyDelayTimer;
             UIManager.Instance.UpdateWaveText(_wave, false);
-
-            if (_enemiesInScene < _maxEnemiesInScene)
-            {
-                int randomEnemy = Random.Range(0, _enemyPrefabs.Length);
-                
-                EnemyMovementType type = _enemyPrefabs[randomEnemy].GetComponent<IEnemy>().GetEnemyMovementType();
-
-                float rng;
-                switch (type)
-                {
-                    case EnemyMovementType.TopDown:
-                        _spawnPos.y = _topBound;
-                        rng = Random.Range(-_leftRightBounds, _leftRightBounds);
-                        _spawnPos.x = rng;
-                        break;
-                    case EnemyMovementType.RightLeft:
-                        Debug.LogWarning("Not Implemented Yet");
-                        break;
-                    case EnemyMovementType.LeftRight:
-                        _spawnPos.x = -_leftRightBounds - 2.5f;
-                        rng = Random.Range(1, _topBound - 2);
-                        _spawnPos.y = rng;
-                        break;
-                    default:
-                        break;
-                }
-
-                Instantiate(_enemyPrefabs[randomEnemy], _spawnPos, Quaternion.identity, _enemyContainer);
-                _enemiesInScene++;
-                _spawnedEnemyCount++;
-            }
-
         }
-        yield return _enemyDelayTimer;
-        //WaveAdvance();
+        else
+        {
+            while (_isSpawning && _spawnedEnemyCount < _enemyWaveCount)
+            {
+                yield return _enemyDelayTimer;
+                UIManager.Instance.UpdateWaveText(_wave, false);
+
+                if (_enemiesInScene < _maxEnemiesInScene)
+                {
+                    int randomEnemy = Random.Range(0, _enemyPrefabs.Length);
+
+                    EnemyMovementType type = _enemyPrefabs[randomEnemy].GetComponent<IEnemy>().GetEnemyMovementType();
+
+                    float rng;
+                    switch (type)
+                    {
+                        case EnemyMovementType.TopDown:
+                            _spawnPos.y = _topBound;
+                            rng = Random.Range(-_leftRightBounds, _leftRightBounds);
+                            _spawnPos.x = rng;
+                            break;
+                        case EnemyMovementType.RightLeft:
+                            Debug.LogWarning("Not Implemented Yet");
+                            break;
+                        case EnemyMovementType.LeftRight:
+                            _spawnPos.x = -_leftRightBounds - 2.5f;
+                            rng = Random.Range(1, _topBound - 2);
+                            _spawnPos.y = rng;
+                            break;
+                        default:
+                            break;
+                    }
+
+                    Instantiate(_enemyPrefabs[randomEnemy], _spawnPos, Quaternion.identity, _enemyContainer);
+                    _enemiesInScene++;
+                    _spawnedEnemyCount++;
+                }
+            }
+        }
+        yield return _enemyDelayTimer;       
     }
 
     IEnumerator PowerupSpawner()
     {
         yield return _enemyDelayTimer;
-        while (_isSpawning)
+        while (_isPowerupSpawning)
         {
             _spawnPos.y = _topBound;
             float randomSpawnPOS = Random.Range(-_leftRightBounds, _leftRightBounds);
@@ -133,7 +146,8 @@ public class SpawnManager : MonoBehaviour
             int randomPowerup = PickRandomPowerUp();
 
             Instantiate(_powerupPrefabs[randomPowerup], _spawnPos, Quaternion.identity);
-            yield return new WaitForSeconds(1);
+            float RandomSpawnTime = Random.Range(3, 7);
+            yield return new WaitForSeconds(RandomSpawnTime);
         }
     }
 
@@ -183,5 +197,12 @@ public class SpawnManager : MonoBehaviour
     public void OnPlayerDeath()
     {
         _isSpawning = false;
+        _isPowerupSpawning = false;
+    }
+
+    public void RestartSpawning()
+    {
+        _isSpawning = true;
+        StartCoroutine(WaveAdvance());
     }
 }

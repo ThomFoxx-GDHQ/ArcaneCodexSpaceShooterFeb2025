@@ -50,6 +50,7 @@ public class EnemyBoss : MonoBehaviour, IEnemy
     private Coroutine _coroutine;
     [SerializeField] private SpriteRenderer _modelRenderer;
     private Coroutine _damagedRoutine;
+    [SerializeField] private int _scoreValue = 100;
 
     Transform _player;
 
@@ -57,6 +58,11 @@ public class EnemyBoss : MonoBehaviour, IEnemy
     {
         // Initialization logic (currently unused)
         _player = GameObject.FindGameObjectWithTag("Player").transform;
+        _laserBarrage = GameObject.Find("LaserBarrageObject")?.GetComponent<LaserBarrageManager>();
+        _laserBarrage?.AssignBoss(this);
+        _missileFireLocations.Clear();
+        _missileFireLocations.AddRange(GameObject.Find("Boss Missile Fire Locations").transform.GetComponentsInChildren<Transform>());
+        _missileFireLocations.RemoveAll(x => x.childCount > 0);
         _currentHealth = _maxHealth;
         UIManager.Instance.ActivateBossBar(true);
         UIManager.Instance.UpdateBossHealth((float)_currentHealth/(float)_maxHealth);
@@ -265,7 +271,10 @@ public class EnemyBoss : MonoBehaviour, IEnemy
 
         if (_currentHealth < 1)
         {
+            GameManager.Instance.AddToScore(_scoreValue);
+            GameManager.Instance.GameOver();
             UIManager.Instance.OnGameOver();
+            //SpawnManager.Instance.RestartSpawning(); If we want do continous game.
             Destroy(this.gameObject);
         }
     }
