@@ -86,6 +86,12 @@ public class Player : MonoBehaviour
     [Header("For Testing")]
     [SerializeField] bool _isImortal = false;
 
+    [Header("Coroutine Timers")]
+    private WaitForSeconds _defaultSpeedTimer;
+    private WaitForSeconds _midWaitTimer;
+    [SerializeField]
+    private float _midWaitTime = 5f;
+
 #endregion
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -93,6 +99,8 @@ public class Player : MonoBehaviour
     {
         UIManager.Instance.UpdateLives(3);
         _fireTime = new WaitForSeconds(_fireRate);
+        _midWaitTimer = new WaitForSeconds(_midWaitTime);
+        _defaultSpeedTimer = new WaitForSeconds(_defaultSpeedBoostTimerLength);
         _shieldVisual?.SetActive(false);
 
         _damageVisuals ??= GetComponentInChildren<DamageVisuals>();
@@ -112,8 +120,6 @@ public class Player : MonoBehaviour
         if (_isDead) return;
         if (_wasHit)
             _wasHit = false;
-
-
 
         ThrusterCalculations();
         CalculateMovement();
@@ -441,7 +447,7 @@ public class Player : MonoBehaviour
 
     IEnumerator SlowDownRoutine()
     {
-        yield return new WaitForSeconds(_defaultSpeedBoostTimerLength);
+        yield return _defaultSpeedTimer;
         _slowDownMultiplier = 1;
     }
 
@@ -453,7 +459,7 @@ public class Player : MonoBehaviour
 
     IEnumerator WeaponJamCoolDown()
     {
-        yield return new WaitForSeconds(5);
+        yield return _midWaitTimer;
         _canFire = true;
     }
 
@@ -465,7 +471,7 @@ public class Player : MonoBehaviour
 
     IEnumerator SlowLaserCoolDown()
     {
-        yield return new WaitForSeconds(5);
+        yield return _midWaitTimer;
         _slowLasers = false;
     }
 

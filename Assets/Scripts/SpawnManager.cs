@@ -78,7 +78,7 @@ public class SpawnManager : MonoBehaviour
             _enemyWaveCount = _wave * _waveMultiplier;
             yield return StartCoroutine(EnemySpawner());
             Debug.Log($"Wave # {_wave} has ended.");
-            yield return new WaitForSeconds(5f);
+            yield return _enemyDelayTimer;
         }
     }
 

@@ -7,11 +7,11 @@ public class SpiralEnemy : MonoBehaviour, IEnemy
     [SerializeField] EnemyMovementType _enemyMovementType;
     [SerializeField] float _speed = 5f;
 
-    [Header("Boundary")]
-    [SerializeField] float _topbounds;
-    [SerializeField] float _bottombounds;
-    [SerializeField] float _leftBounds;
-    [SerializeField] float _rightBounds;
+    //[Header("Boundary")]
+    //[SerializeField] float _topbounds;
+    //[SerializeField] float _bottombounds;
+    //[SerializeField] float _leftBounds;
+    //[SerializeField] float _rightBounds;
 
     [Header("Laser Stuff")]
     [SerializeField] Transform _leftLaserPoint;
@@ -77,10 +77,10 @@ public class SpiralEnemy : MonoBehaviour, IEnemy
 
         transform.position = _travelLinePosition + _circleOffset;
 
-        if (transform.position.y <= _bottombounds)
+        if (transform.position.y <= GameManager.Instance.EnemyBounds.bottom)
         {
-            float randX = Random.Range(_leftBounds, _rightBounds);
-            transform.position = new Vector2(randX, _topbounds);
+            float randX = Random.Range(GameManager.Instance.EnemyBounds.left, GameManager.Instance.EnemyBounds.right);
+            transform.position = new Vector2(randX, GameManager.Instance.EnemyBounds.top);
             _travelLinePosition = transform.position;
         }
     }

@@ -399,6 +399,7 @@ MonoBehaviour:
   _overheatThrustCooldownRate: 2
   _overheatLimiter: 50
   _isImortal: 0
+  _midWaitTime: 5
 --- !u!4 &176665495
 Transform:
   m_ObjectHideFlags: 0
@@ -1282,6 +1283,8 @@ MonoBehaviour:
   _waveText: {fileID: 1994016594}
   _bossBar: {fileID: 2006660572}
   _bossHealthBar: {fileID: 758139425}
+  _shortWaitTime: 0.25
+  _midWaitTime: 1
 --- !u!114 &328665791
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1294,6 +1297,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 92cff936bbc150a4cab557f3881a52b2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _enemyBounds:
+    top: 7
+    bottom: -7
+    left: -9
+    right: 0
 --- !u!82 &328665792
 AudioSource:
   m_ObjectHideFlags: 0

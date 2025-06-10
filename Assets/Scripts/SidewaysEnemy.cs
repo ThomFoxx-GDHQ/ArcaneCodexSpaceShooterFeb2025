@@ -20,7 +20,7 @@ public class SidewaysEnemy : MonoBehaviour, IEnemy
     [SerializeField] Vector3 _explosionScale;
 
     [SerializeField] int _scoreValue = 5;
-
+    private Vector3 _enemyPosition;
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
@@ -41,12 +41,16 @@ public class SidewaysEnemy : MonoBehaviour, IEnemy
         if (transform.position.x > _horizontalBounds.y)
         {
             _direction = -1;
-            transform.position = new Vector3(transform.position.x, GetRandomY(), 0);
+            _enemyPosition = transform.position;
+            _enemyPosition.y = GetRandomY();
+            //transform.position = new Vector3(transform.position.x, GetRandomY(), 0);
         }
         else if (transform.position.x < _horizontalBounds.x)
         {
             _direction = 1;
-            transform.position = new Vector3(transform.position.x, GetRandomY(), 0);
+            _enemyPosition = transform.position;
+            _enemyPosition.y = GetRandomY();
+            //transform.position = new Vector3(transform.position.x, GetRandomY(), 0);
         }
     }
 

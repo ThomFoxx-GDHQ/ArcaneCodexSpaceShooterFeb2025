@@ -8,11 +8,11 @@ public class Enemy : MonoBehaviour, IEnemy
     [SerializeField] EnemyMovementType _enemyMovementType;
     [SerializeField] float _speed = 5f;
 
-    [Header("Boundary")]
-    [SerializeField] float _topbounds;
-    [SerializeField] float _bottombounds;
-    [SerializeField] float _leftBounds;
-    [SerializeField] float _rightBounds;
+    //[Header("Boundary")]
+    //[SerializeField] float _topbounds;
+    //[SerializeField] float _bottombounds;
+    //[SerializeField] float _leftBounds;
+    //[SerializeField] float _rightBounds;
 
     [Header("Laser Stuff")]
     [SerializeField] Transform _leftLaserPoint;
@@ -80,13 +80,13 @@ public class Enemy : MonoBehaviour, IEnemy
             transform.Translate(Vector3.down * (_speed * Time.deltaTime));
         }
 
-        if (transform.position.y <= _bottombounds)
+        if (transform.position.y <= GameManager.Instance.EnemyBounds.bottom)
         {
-            float randX = Random.Range(_leftBounds, _rightBounds);
-            transform.position = new Vector2(randX, _topbounds);
+            float randX = Random.Range(GameManager.Instance.EnemyBounds.left, GameManager.Instance.EnemyBounds.right);
+            transform.position = new Vector2(randX, GameManager.Instance.EnemyBounds.top);
         }
 
-        if (Mathf.Abs(transform.position.x) > _rightBounds)
+        if (Mathf.Abs(transform.position.x) > GameManager.Instance.EnemyBounds.right)
             _isDodging = false;
     }
 

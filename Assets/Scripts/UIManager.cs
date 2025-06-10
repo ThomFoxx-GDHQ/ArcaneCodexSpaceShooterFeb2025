@@ -23,12 +23,22 @@ public class UIManager : MonoBehaviour
     [SerializeField] TMP_Text _waveText;
     [SerializeField] GameObject _bossBar;
     [SerializeField] Image _bossHealthBar;
+    WaitForSeconds _shortWaitTimer;
+    WaitForSeconds _midWaitTimer;
+    [SerializeField] float _shortWaitTime =.25f;
+    [SerializeField] float _midWaitTime = 1f;
 
     private void Awake()
     {
         _instance = this;
         if (_extraDisplay == null)
             Debug.LogError("Extra Lives Display is NULL!",this);
+    }
+
+    private void Start()
+    {
+        _shortWaitTimer = new WaitForSeconds(_shortWaitTime);
+        _midWaitTimer = new WaitForSeconds(_midWaitTime);
     }
 
     public void UpdateScore(int score)
@@ -80,9 +90,9 @@ public class UIManager : MonoBehaviour
         while (true)
         {
             _gameOverText.SetActive(true);
-            yield return new WaitForSeconds(1f);
+            yield return _midWaitTimer;
             _gameOverText.SetActive(false);
-            yield return new WaitForSeconds(.25f);
+            yield return _shortWaitTimer;
         }
     }
 

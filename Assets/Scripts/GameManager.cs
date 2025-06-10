@@ -1,6 +1,15 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
+[System.Serializable]
+public struct EnemyBounds
+{
+   public float top;
+   public float bottom;
+   public float left;
+   public float right;
+}
+
 public class GameManager : MonoBehaviour
 {
     private static GameManager _instance;
@@ -10,6 +19,9 @@ public class GameManager : MonoBehaviour
     private int _playerScore = 0;
     private bool _isGameOver = false;
 
+    [SerializeField] private EnemyBounds _enemyBounds;
+    public EnemyBounds EnemyBounds => _enemyBounds;
+    
     private void Awake()
     {
         _instance = this;

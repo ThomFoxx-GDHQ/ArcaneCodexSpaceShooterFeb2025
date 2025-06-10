@@ -9,10 +9,10 @@ public class MineLayingEnemy : MonoBehaviour, IEnemy
     [SerializeField] float _mineRate = 2f;
     float _canMine = 0f;
 
-    [Header("Screen Boundaries")]
-    [SerializeField] float _topBounds;
-    [SerializeField] float _bottomBounds;
-    [SerializeField] float _leftRightBounds;
+    //[Header("Screen Boundaries")]
+    //[SerializeField] float _topBounds;
+    //[SerializeField] float _bottomBounds;
+    //[SerializeField] float _leftRightBounds;
 
     Player _player;
 
@@ -47,10 +47,10 @@ public class MineLayingEnemy : MonoBehaviour, IEnemy
     {
         transform.Translate(Vector3.down * (_speed * Time.deltaTime));
 
-        if (transform.position.y < _bottomBounds)
+        if (transform.position.y < GameManager.Instance.EnemyBounds.bottom)
         {
-            float rng = Random.Range(-_leftRightBounds, _leftRightBounds);
-            transform.position = new Vector3(rng, _topBounds, 0);
+            float rng = Random.Range(GameManager.Instance.EnemyBounds.left, GameManager.Instance.EnemyBounds.right);
+            transform.position = new Vector3(rng, GameManager.Instance.EnemyBounds.top, 0);
         }
     }
 

@@ -6,11 +6,11 @@ public class AggressiveEnemy : MonoBehaviour, IEnemy
     [SerializeField] EnemyMovementType _enemyMovementType;
     [SerializeField] float _speed = 5f;
 
-    [Header("Boundary")]
-    [SerializeField] float _topbounds;
-    [SerializeField] float _bottombounds;
-    [SerializeField] float _leftBounds;
-    [SerializeField] float _rightBounds;
+    //[Header("Boundary")]
+    //[SerializeField] float _topbounds;
+    //[SerializeField] float _bottombounds;
+    //[SerializeField] float _leftBounds;
+    //[SerializeField] float _rightBounds;
 
     [Space(10)]
     [SerializeField] GameObject _explosion;
@@ -66,10 +66,10 @@ public class AggressiveEnemy : MonoBehaviour, IEnemy
             _model.transform.rotation = Utilities2D.LookAt2D(_player.transform.position, transform.position);
         }
 
-        if (transform.position.y < _bottombounds)
+        if (transform.position.y < GameManager.Instance.EnemyBounds.bottom)
         {
-            float rndX = Random.Range(_leftBounds, _rightBounds);
-            transform.position = new Vector3(rndX, _topbounds, 0);
+            float rndX = Random.Range(GameManager.Instance.EnemyBounds.left, GameManager.Instance.EnemyBounds.right);
+            transform.position = new Vector3(rndX, GameManager.Instance.EnemyBounds.top, 0);
         }
     }
 
