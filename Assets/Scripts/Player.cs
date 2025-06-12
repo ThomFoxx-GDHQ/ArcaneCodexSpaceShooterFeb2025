@@ -1,5 +1,6 @@
 using System.Collections;
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class Player : MonoBehaviour
 {
@@ -92,11 +93,17 @@ public class Player : MonoBehaviour
     [SerializeField]
     private float _midWaitTime = 5f;
 
+    PlayerInputActions _inputActions;
+    Vector2 _movement = Vector2.zero;
+    bool _isFireControlPressed = false;
+
 #endregion
 
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
+        InputSystemInitialization();
+
         UIManager.Instance.UpdateLives(3);
         _fireTime = new WaitForSeconds(_fireRate);
         _midWaitTimer = new WaitForSeconds(_midWaitTime);
@@ -114,6 +121,41 @@ public class Player : MonoBehaviour
         UIManager.Instance.UpdateAmmo(_currentAmmoCount);
     }
 
+    private void InputSystemInitialization()
+    {
+        _inputActions = new PlayerInputActions();
+        _inputActions.Player.Enable();
+        _inputActions.Player.FireControl.started += FireControl_started;
+        _inputActions.Player.FireControl.canceled += FireControl_canceled;
+        _inputActions.Player.ThrusterControl.started += ThrusterControl_started;
+        _inputActions.Player.ThrusterControl.canceled += ThrusterControl_canceled;
+    }
+
+    private void ThrusterControl_started(InputAction.CallbackContext obj)
+    {
+        if (_canThrust)
+        {
+            _thrustMultiplier = _thrustBoostMultiplier;
+            _isThrusting = true;
+        }
+    }
+
+    private void ThrusterControl_canceled(InputAction.CallbackContext obj)
+    {
+        _thrustMultiplier = 1;
+        _isThrusting = false;
+    }
+
+    private void FireControl_started(InputAction.CallbackContext obj)
+    {
+       _isFireControlPressed = true;
+    }
+
+    private void FireControl_canceled(InputAction.CallbackContext obj)
+    {
+       _isFireControlPressed = false;
+    }
+
     // Update is called once per frame
     void Update()
     {
@@ -128,40 +170,43 @@ public class Player : MonoBehaviour
         if (_canFire)
         {
             //Spawn Laser when hit Space bar
-            if (Input.GetKeyDown(KeyCode.Space) && !_isFiring)
+            if (_isFireControlPressed && !_isFiring)
             {
                 _isFiring = true;
-                _fireCoroutine = StartCoroutine(FireSequence());
+                if (_fireCoroutine == null)
+                    _fireCoroutine = StartCoroutine(FireSequence());
             }
-            if (Input.GetKeyUp(KeyCode.Space))
+            if (_isFireControlPressed == false)
             {
                 _isFiring = false;
                 if (_fireCoroutine != null)
                 {
                     StopCoroutine(_fireCoroutine);
+                    _fireCoroutine = null;
                 }
             }
         }
         else if (_fireCoroutine != null)
         {
             StopCoroutine(_fireCoroutine);
+            _fireCoroutine = null;
         }
 
     }
 
     private void ThrusterCalculations()
     {
-
-        if (Input.GetKeyDown(KeyCode.LeftShift) && _canThrust)
-        {
-            _thrustMultiplier = _thrustBoostMultiplier;
-            _isThrusting = true;
-        }
-        if (Input.GetKeyUp(KeyCode.LeftShift))
-        {
-            _thrustMultiplier = 1;
-            _isThrusting = false;
-        }
+        // ### Legacy Input Manager Code ### //
+        //if (Input.GetKeyDown(KeyCode.LeftShift) && _canThrust)
+        //{
+        //    _thrustMultiplier = _thrustBoostMultiplier;
+        //    _isThrusting = true;
+        //}
+        //if (Input.GetKeyUp(KeyCode.LeftShift))
+        //{
+        //    _thrustMultiplier = 1;
+        //    _isThrusting = false;
+        //}
 
         //Increase heat while Thursting
         if (_isThrusting && _currentHeat < _minMaxHeat.y)
@@ -208,14 +253,21 @@ public class Player : MonoBehaviour
     {
         if (_isCaughtByTractor) return;
 
-        //Get Inputs
-        _horizontalInput = Input.GetAxis("Horizontal");
-        _verticalInput = Input.GetAxis("Vertical");
+        // ### Legacy Input Manager Code ### //
+        ////Get Inputs
+        //_horizontalInput = Input.GetAxis("Horizontal");
+        //_verticalInput = Input.GetAxis("Vertical");
+
+        //Get Movement Value
+        _movement = _inputActions.Player.Movement.ReadValue<Vector2>();
 
         //Assign Inputs to Vector3 Direction
         //_direction = new Vector3(_horizontalInput, _verticalInput);
-        _direction.x = _horizontalInput;
-        _direction.y = _verticalInput;
+        //_direction.x = _horizontalInput;
+        //_direction.y = _verticalInput;
+        _direction.x = _movement.x;
+        _direction.y = _movement.y;
+        _direction.z = 0;
 
         //Use Direction to Translate
         if (_isSpeedBoostActive)
@@ -250,6 +302,7 @@ public class Player : MonoBehaviour
             FireLaser();
             yield return _fireTime;
         }
+        _fireCoroutine = null; 
     }
 
     private void FireLaser()
@@ -492,5 +545,14 @@ public class Player : MonoBehaviour
                 Destroy(other.gameObject);
             }
         }
+    }
+
+    private void OnDisable()
+    {
+        _inputActions.Player.FireControl.started -= FireControl_started;
+        _inputActions.Player.FireControl.canceled -= FireControl_canceled;
+        _inputActions.Player.ThrusterControl.started -= ThrusterControl_started;
+        _inputActions.Player.ThrusterControl.canceled -= ThrusterControl_canceled;
+        _inputActions.Player.Disable();
     }
 }
