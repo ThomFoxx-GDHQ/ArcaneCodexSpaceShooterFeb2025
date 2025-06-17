@@ -16,6 +16,7 @@ public class UIManager : MonoBehaviour
     [SerializeField] Sprite[] _livesSprites;
     [SerializeField] GameObject _extraDisplay;
     [SerializeField] GameObject _gameOverText;
+    [SerializeField] GameObject _restartText;
     [SerializeField] Image _thrusterImage;
     [SerializeField] Image _shieldMeter;
     [SerializeField] Sprite[] _shieldMeterSprites;
@@ -82,6 +83,7 @@ public class UIManager : MonoBehaviour
     
     public void OnGameOver()
     {
+        _restartText.SetActive(true);
         StartCoroutine(GameOverRoutine());
     }
 

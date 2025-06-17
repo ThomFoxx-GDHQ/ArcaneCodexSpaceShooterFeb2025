@@ -1,0 +1,10 @@
+# ninja log v5
+34	1193	7718278639532567	GameActivity/CMakeFiles/game.dir/UGAInputKeyEvent.cpp.o	637606584d680a9a
+8	1200	7718278639752851	GameActivity/CMakeFiles/game.dir/UGAConfiguration.cpp.o	792fdd9276987335
+50	1218	7718278639989736	GameActivity/CMakeFiles/game.dir/UGAInputMotionEvent.cpp.o	8784fb3c556a7403
+42	1298	7718278640749995	GameActivity/CMakeFiles/game.dir/UGASoftKeyboard.cpp.o	a5204ed6c4f417eb
+18	1315	7718278640831176	GameActivity/CMakeFiles/game.dir/UGAEntry.cpp.o	876aa737ef667e1f
+0	1366	7718278641488867	GameActivity/CMakeFiles/game.dir/UGADebug.cpp.o	f29a3ff5ba03307b
+25	1498	7718278642732048	GameActivity/CMakeFiles/game.dir/UGAInput.cpp.o	418b8392b066f924
+13	1593	7718278643692918	GameActivity/CMakeFiles/game.dir/UGAApplication.cpp.o	75146bc060d36ec8
+1594	1723	7718278644974683	F:/Coding/GameBuilds/ArcaneCodexSpaceShooterFeb2025/Library/Bee/Android/Prj/IL2CPP/Gradle/unityLibrary/build/intermediates/cxx/RelWithDebInfo/356fn1n1/obj/arm64-v8a/libgame.so	ef2dbc4de1fece56

@@ -29,6 +29,8 @@ public class MineLayingEnemy : MonoBehaviour, IEnemy
     void Start()
     {
         _player = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+        _cameraController = Camera.main.GetComponent<CameraController>();
+        _cameraController = Camera.main.GetComponent<CameraController>();
     }
 
     // Update is called once per frame
